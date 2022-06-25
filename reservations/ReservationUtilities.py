@@ -61,20 +61,20 @@ class Reader():
     Methods
     ---------
     read: from a reservation id, read data into Res object
-    getData: given an ID, return an ordered list of attributes
-    tuple_floats: from a tuple-looking string, create a tuple of floats
+    __getData: given an ID, return an ordered list of attributes
+    __tuple_floats: from a tuple-looking string, create a tuple of floats
 
     '''
     @staticmethod
     def read(ID):
 
         # Read data from file into list, return new Res instance
-        d = Reader.getData(ID)
+        d = Reader.__getData(ID)
         return Res(d[0], d[1], d[2], d[3], d[4])
 
 
     @staticmethod
-    def getData(ID):
+    def __getData(ID):
         '''
         Open, read, & clean data from the given gile
 
@@ -105,21 +105,27 @@ class Reader():
 
         # Create dictionary of constructors to clean up data.
         constructor = {'ID': str,
-                 'start_time': Reader.tuple_floats,
-                 'end_time': Reader.tuple_floats,
+                 'start_time': Reader.__tuple_floats,
+                 'end_time': Reader.__tuple_floats,
                  'owner': str,
                  'active': bool}
 
-        data = []
+        positions = {'ID': 0,
+                 'start_time': 2,
+                 'end_time': 3,
+                 'owner': 1,
+                 'active': 4}
 
+        data = [None] * 5
+        
         for line in lines:
-            d_p = constructor[line[0]](line[1])
-            data.append(d_p)
+            key = line[0]
+            data[positions[key]] = constructor[key](line[1])
 
         return data
 
     @staticmethod
-    def tuple_floats(rawTuple):
+    def __tuple_floats(rawTuple):
         '''
         Takes a tuple-like string, and converts into tuple with d_type = float
 
@@ -156,7 +162,7 @@ class Writer():
     @staticmethod
     def write(c_res):
         #TODO: remove _written from file name
-        fileName = f'{c_res.get_ID()}_written.txt'
+        fileName = f'{c_res.get_ID()}.txt'
 
         with open(fileName, mode='w') as file:
             file.write(c_res.toString())
