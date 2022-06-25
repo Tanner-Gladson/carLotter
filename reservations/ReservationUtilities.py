@@ -29,31 +29,35 @@ class Res():
         self.owner = owner
         self.ID = ID
         self.active = active
-
-    def get_start_time(self):
-        return self.start_time
-
-    def get_end_time(self):
-        return self.end_time
-
-    def get_owner(self):
-        return self.get_owner
-
-    def get_ID(self):
-        return self.ID
-
-    def is_active(self):
-        '''
-        Return false if the reservation has been cancelled
-        '''
-        return self.active
-
+    
+    
     def __str__(self):
         return f'*Reservation*\nID:     {self.ID}\nOwner:  {self.owner}\nStart:  {self.start_time}\nEnd:    {self.end_time}\nActive? {self.active}\n'
 
     def toString(self):
         return f'ID:     {self.ID}\nOwner:  {self.owner}\nStart:  {self.start_time}\nEnd:    {self.end_time}\nActive? {self.active}'
 
+
+class Writer():
+
+    '''
+    Attributes
+    --------------
+    c_res: res
+        the current reservation object being managed
+
+    Methods
+    ---------
+    write_res: writes the information from a reservation into a CSV file
+
+    '''
+    @staticmethod
+    def write(c_res):
+        #TODO: remove _written from file name
+        fileName = f'{c_res.get_ID()}.txt'
+
+        with open(fileName, mode='w') as file:
+            file.write(c_res.toString())
 
 
 class Reader():
@@ -146,30 +150,9 @@ class Reader():
 
         return tuple(myList)
 
-class Writer():
-
-    '''
-    Attributes
-    --------------
-    c_res: res
-        the current reservation object being managed
-
-    Methods
-    ---------
-    write_res: writes the information from a reservation into a CSV file
-
-    '''
-    @staticmethod
-    def write(c_res):
-        #TODO: remove _written from file name
-        fileName = f'{c_res.get_ID()}.txt'
-
-        with open(fileName, mode='w') as file:
-            file.write(c_res.toString())
-
 if __name__ == '__main__':
     c_res = Reader.read('testRes')
-
+    
     print(c_res)
-
+    
     Writer.write(c_res)
