@@ -53,8 +53,7 @@ class Writer():
     '''
     @staticmethod
     def write(c_res):
-        #TODO: remove _written from file name
-        fileName = f'{c_res.get_ID()}.txt'
+        fileName = f'{c_res.ID}.txt'
 
         with open(fileName, mode='w') as file:
             file.write(c_res.toString())

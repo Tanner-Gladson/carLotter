@@ -5,4 +5,32 @@ Created on Fri Jun 24 17:27:21 2022
 @author: tanne
 """
 
-import ReservationUtilities as resu
+from reservations.ReservationUtilities import Res
+
+
+class Lift():
+    '''
+    Attributes
+    ------------
+    
+    
+    
+    '''
+    
+    def __init__(self, pos):
+        pass
+    
+    def removeRes(self, resID):
+        pass
+    
+    def insertRes(self, resID, start_time, end_time):
+        pass
+    
+
+
+class LiftManager():
+    '''
+    
+    '''
+    
+    def __
