@@ -166,7 +166,6 @@ class Reader():
             data[positions[key]] = constructor[key](line[1])
             
         return data
-        
 
 
 if __name__ == '__main__':

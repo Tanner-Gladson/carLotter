@@ -117,3 +117,12 @@ class TimeRange():
                 raise ValueError(f'Could not convert {string} into tuple of floats')
 
         return tuple(myList)
+    
+
+if __name__ == '__main__':
+    
+    t1 = TimeRange(start=1, end=2)
+    
+    import numpy as np
+    a = np.array([t1, None])
+    print(a)
