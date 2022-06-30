@@ -13,7 +13,7 @@ class TimeTools():
     @staticmethod
     def float_to_string(time):
         '''
-        Converts the float to standard time (string, eg '12:00 to 13:00')
+        Converts the float to standard time (string, eg '12.0'' to 12:00')
         '''
         hours = int(time//1)
         minutes = str(int((time % 1) * 60)).rjust(2, '0')
@@ -97,7 +97,8 @@ class TimeRange():
     
     def toString(self):
         '''
-        Condenses object's data into form suitable for writing to file
+        Condenses object's data into form suitable for writing to file,
+            a tuple of floats
         '''
         return str((self.start, self.end))
     
@@ -125,4 +126,4 @@ if __name__ == '__main__':
     
     import numpy as np
     a = np.array([t1, None])
-    print(a)
+    print(a[0])

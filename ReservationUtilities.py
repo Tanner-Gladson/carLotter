@@ -99,14 +99,26 @@ class Reader():
     '''
     Methods
     ---------
-    read: from a reservation id, read data into Res object
+    read: from a reservation id, read data. Resturn Res object
     __getData: given an ID, return an ordered list of attributes
     __tuple_floats: from a tuple-looking string, create a tuple of floats
 
     '''
     @staticmethod
     def read(ID):
+        '''
+        
 
+        Parameters
+        ----------
+        ID : string
+            ID of reservation file to be read.
+
+        Returns
+        -------
+        Res instance
+
+        '''
         # Read data from file into list, return new Res instance
         d = Reader.__getData(ID)
         return Res(d[0], d[1], d[2], d[3], d[4])
