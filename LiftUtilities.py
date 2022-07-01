@@ -10,9 +10,17 @@ from TimeUtilities import TimeTools, TimeRange
 import numpy as np
 from typing import Union
 import sys
+import json
+
 
 class Day():
     '''
+    Class Attributes
+    -----------------
+    days_initiated : list [int]
+        list of the days that have already been initiated & saved as files
+    
+    
     Attributes
     ----------
     day_num : Int
@@ -53,8 +61,27 @@ class Day():
     read(day_num) -> Day
         Read the files titled 'day_num.txt' & 'day_num.npy' to 
         construct/return a Day instance
+        
+    @class
+    save_days_init(Day) -> None
+        Save (pickle) list of days that have been initiated
+        
     
     '''
+    
+    days_initiated = json.load(open('days/initiated_days.json'))
+    
+    @classmethod
+    def update_days_init(self, day):
+        '''
+        Save list of days that already have corresponding file
+        '''
+        if day not in Day.days_initiated:
+            self.days_initiated.append(day)
+            json.dump(self.days_initiated,  open('days/initiated_days.json', 'w'))
+        
+    
+    
     def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None):
         '''
         Initialize values of new instance
@@ -83,6 +110,10 @@ class Day():
             self.res_locs = res_locs
         else:
             self.res_locs = {}
+            
+        self.save()
+        Day.update_days_init(day_num)
+        
             
     
     def remove_res(self, c_res: Res) -> None:
@@ -185,6 +216,8 @@ class Day():
             file.write(str(self))
             
         np.save(f'days/{self.day}', self.reservedSlots)
+        
+        Day.update_days_init(self.day)
     
     @staticmethod
     def fromFiles(day_num):
@@ -218,13 +251,13 @@ class Day():
         return Day(day_num, num_lifts, reservedSlots, res_locs)
 
 if __name__ == '__main__':
-    res1 = Res('abcd', 'Smarthi', 1, start_time=1, end_time=2)
+    res1 = Res('abcd', 'Smarthi', 2, start_time=1, end_time=2)
     res2 = Res('jdhf', 'Smarthi', 1, start_time=1, end_time=3)
     res3 = Res('gdfg', 'Smarthi', 1, start_time=1, end_time=3)
     
     # Read a file, change instance's day so you don't overwrite
     myDay = Day.fromFiles('test')
-    myDay.day = 1
+    myDay.day = 2
     myDay.write_res(res1)
     print(myDay)
     
@@ -232,12 +265,5 @@ if __name__ == '__main__':
     myDay.write_res(res2)
     print('\n')
     print(myDay)
-    
-    myDay.write_res(res3)
-    print('\n')
-    print(myDay)
-    
-    
-    
     
     
