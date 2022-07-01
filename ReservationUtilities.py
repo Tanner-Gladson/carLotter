@@ -72,42 +72,21 @@ class Res():
 
     def toString(self):
         return f'ID:     {self.ID}\nOwner:  {self.owner}\nDay:    {self.day}\nTimes:  {self.tRange.toString()}\nActive: {self.active}'
-
-
-class Writer():
-
-    '''
-    Attributes
-    --------------
-    c_res: res
-        the current reservation object being managed
-
-    Methods
-    ---------
-    write_res: writes the information from a reservation into a CSV file
-
-    '''
-    @staticmethod
-    def write(c_res):
-        fileName = f'reservations/{c_res.ID}.txt'
+    
+    def save(self):
+        '''
+        save reservation object as text file.
+        '''
+        fileName = f'reservations/{self.ID}.txt'
 
         with open(fileName, mode='w') as file:
-            file.write(c_res.toString())
-
-
-class Reader():
-    '''
-    Methods
-    ---------
-    read: from a reservation id, read data. Resturn Res object
-    __getData: given an ID, return an ordered list of attributes
-    __tuple_floats: from a tuple-looking string, create a tuple of floats
-
-    '''
+            file.write(self.toString())
+            
+    
     @staticmethod
-    def read(ID):
+    def fromFile(ID):
         '''
-        
+        Creates a reservation (Res) instance from file named {ID}.txt
 
         Parameters
         ----------
@@ -116,32 +95,11 @@ class Reader():
 
         Returns
         -------
-        Res instance
+        Res
+            Reservation instance from file {ID}.txt
 
         '''
-        # Read data from file into list, return new Res instance
-        d = Reader.__getData(ID)
-        return Res(d[0], d[1], d[2], d[3], d[4])
-
-
-    @staticmethod
-    def __getData(ID):
-        '''
-        Open, read, & clean data from the given gile
-
-        Parameters
-        ----------
-        ID : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        List
-            Ordered list of values from the reservation file
-            [ID, owner, start_time, end_time, active]
-
-        '''
-
+        
         # Read file
         with open(f'reservations/{ID}.txt') as file:
             lines = file.read().split('\n')
@@ -171,20 +129,20 @@ class Reader():
                  'owner': 1,
                  'active': 4}
 
-        data = [None] * 5
+        d = [None] * 5
         
         for line in lines:
             key = line[0]
-            data[positions[key]] = constructor[key](line[1])
-            
-        return data
+            d[positions[key]] = constructor[key](line[1])
+        
+        return Res(d[0], d[1], d[2], d[3], d[4])
 
 
 if __name__ == '__main__':
-    c_res = Reader.read('testRes')
+    c_res = Res.fromFile('testRes')
     
     print(c_res)
     
-    Writer.write(c_res)
+    c_res.save()
     
     

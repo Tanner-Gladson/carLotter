@@ -47,11 +47,12 @@ class Day():
         Return data from Day as a readable string
         
     writeSelf(self) -> None
-        Write data from self into a file titled self.ID
+        Write data from self into a file titled self.ID.txt * self.ID.npy
     
     @static
     read(day_num) -> Day
-        Read the file titled 'day_num.txt' and construct/return a Day instance
+        Read the files titled 'day_num.txt' & 'day_num.npy' to 
+        construct/return a Day instance
     
     '''
     def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None):
@@ -101,6 +102,9 @@ class Day():
         tRange = c_res.tRange
         lift = self.findBestLift(tRange)
         
+        if lift == -1:
+            raise ValueError(f'The following reservation does not fit in {self.day}:\n{c_res}')
+        
         # TODO Indexing only works if start & end times are multiples of hours
         self.reservedSlots[lift, int(tRange.start):int(tRange.end)] = c_res.ID
         self.save()
@@ -128,10 +132,39 @@ class Day():
             The lift (index of reservedSlots) where the reservation should be
             inserted
         '''
+        s = int(tRange.start)
+        e = int(tRange.end)
+        res_times = np.arange(s, e)
+        b_lift = -1
+        min_score = sys.maxsize
         
+        # Iterate through each lift, and determine if the reservation will fit
+        # in that lift. If it does, calculate the score.
+        for k in range(self.n_lifts):
+            opens = np.where(self.reservedSlots[k] == None)[0]
+            
+            # If fit, find score. Else, continue
+            if np.all(np.isin(res_times, opens)):
+                # Find the gap between current res and nearest reservations.
+                # Calculate score, and assign new best lift & score
+                i = s
+                j = e-1
+                while self.reservedSlots[k, i] == None and i > 0:
+                    i -= 1
+                while self.reservedSlots[k, j] == None and j < 23:
+                    j += 1
+                
+                d1 = s - i
+                d2 = j - e
+                score = (d1 - (d1**2)/48 )  + (d2 - (d2**2)/48 )
+                
+                if score < min_score:
+                    min_score = score
+                    b_lift = k
         
-        pass
+        return b_lift
         
+    
     def __str__(self) -> str:
         
         # Create string: day, number lifts, location dictionary, and np array
@@ -185,13 +218,24 @@ class Day():
         return Day(day_num, num_lifts, reservedSlots, res_locs)
 
 if __name__ == '__main__':
-    new_res = Res('abcd', 'Smarthi', 1, start_time=1, end_time=2)
+    res1 = Res('abcd', 'Smarthi', 1, start_time=1, end_time=2)
+    res2 = Res('jdhf', 'Smarthi', 1, start_time=1, end_time=3)
+    res3 = Res('gdfg', 'Smarthi', 1, start_time=1, end_time=3)
     
     # Read a file, change instance's day so you don't overwrite
     myDay = Day.fromFiles('test')
     myDay.day = 1
-    myDay.write_res(new_res)
-    myDay.save()
+    myDay.write_res(res1)
+    print(myDay)
+    
+    
+    myDay.write_res(res2)
+    print('\n')
+    print(myDay)
+    
+    myDay.write_res(res3)
+    print('\n')
+    print(myDay)
     
     
     
