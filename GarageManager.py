@@ -1,5 +1,5 @@
 
-from ReservationUtilities import Res
+from ReservationClass import Res
 from TimeUtilities import TimeRange
 from DayClass import Day
 

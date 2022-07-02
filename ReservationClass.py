@@ -9,7 +9,7 @@ from TimeUtilities import TimeRange
 
 class Res():
     '''
-    Reservation class, shortened to Res
+    Reservation class, shortened to Res. Does not auto save to file.
     
     Attributes
     ----------
