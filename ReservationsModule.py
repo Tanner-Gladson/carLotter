@@ -5,7 +5,9 @@ Created on Fri Jun 24 17:27:21 2022
 @author: tanne
 """
 
+from calendar import c
 from TimeUtilities import TimeRange
+import os
 
 class Res():
     '''
@@ -77,7 +79,7 @@ class Res():
         '''
         save reservation object as text file.
         '''
-        fileName = f'reservations/{self.ID}.txt'
+        fileName = f'reservations/{self.ID}.txt'.lower()
 
         with open(fileName, mode='w') as file:
             file.write(self.toString())
@@ -101,7 +103,7 @@ class Res():
         '''
         
         # Read file
-        with open(f'reservations/{ID}.txt') as file:
+        with open(f'reservations/{ID}.txt'.lower()) as file:
             lines = file.read().split('\n')
 
         # Go through each line and split key from values.
@@ -138,11 +140,98 @@ class Res():
         return Res(d[0], d[1], d[2], d[3], d[4])
 
 
+class ResManager():
+    '''
+    A static class for interfacing & managing Res instances (and objects).
+    
+    Methods
+    --------
+    load_res(ID: str) -> Res
+        load the specified reservation from its file
+        
+    create_res(ID, owner, day, tRange) -> Res
+        Create a Res instance. Auto saves to file
+        
+    change_date_n_time(c_res: Res, new_d: int, new_tRange: TimeRange) -> None
+        Change the date and/or time of an existing reservation. Save.
+        
+    cancel_res(c_res: Res) -> None
+        Set the 'active' member of an existing Res to False. Save
+        
+    smite_res(ID: str) -> None
+        Deletes the file of an existing reservation. Only used for testing.
+    
+    '''
+    
+    @staticmethod
+    def load_res(ID: str) -> Res:
+        ''' Creates a reservation (Res) instance from file named {ID}.txt '''
+        return Res.fromFile(ID=ID)
+    
+    @staticmethod
+    def create_res(ID: str, owner: str, day: int, tRange: TimeRange) -> Res:
+        '''
+        Create a Res instance. Auto saves to file
+        
+        Parameters
+        ----------
+        ID : string
+            A unique identification of reservation. Will be the file's prefix
+        
+        owner : string
+            Username of Res owner/creator.
+        
+        day : int
+            Day (1-365) of the reservation.
+        
+        tRange : TimeRange
+            Time range of reservation (attributes start & end)
+        '''
+        
+        c_res = Res(ID=ID, owner=owner, day=day, time_range=tRange)
+        c_res.save()
+        return c_res
+    
+    @staticmethod
+    def change_date_n_time(c_res: Res, new_d: int, new_tRange: TimeRange) -> None:
+        '''
+        Update the date and time of a reservation
+        
+        Parameters
+        ----------
+        c_res : Res
+            The reservation instance & file to be modified
+            
+        new_d : int
+            The new day value of the reservation
+            
+        new_rTange : TimeRange
+            The new time range spanned by the reservation
+        '''
+        c_res.day = new_d
+        c_res.tRange = new_tRange
+        c_res.start = c_res.tRange.start
+        c_res.end = c_res.tRange.end
+        
+        c_res.save()
+    
+    @staticmethod
+    def cancel_res(c_res: Res) -> None:
+        
+        c_res.active = False
+        c_res.save()
+        
+    
+    @staticmethod
+    def smite_res(ID: str) -> None:
+        '''
+        Delete the file of an existing reservation.
+        '''
+        filename = f'reservations/{ID}.txt'
+        os.remove(filename)
+
+
 if __name__ == '__main__':
-    c_res = Res.fromFile('testRes')
     
-    print(c_res)
-    
-    c_res.save()
-    
+    pass
     

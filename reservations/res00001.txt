@@ -1,0 +1,5 @@
+ID:     res00001
+Owner:  smarthi
+Day:    2
+Times:  (1.0, 7.0)
+Active: False
