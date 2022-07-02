@@ -1,1 +1,1 @@
-I am testing what making a push does
+A software for allocating & managing reservations in a parking garage.
