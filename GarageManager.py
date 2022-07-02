@@ -45,7 +45,7 @@ class GarageManager():
     default_num_lifts = 2
 
     @classmethod
-    def check_if_available(self, day_ID, tRange: TimeRange, modifiying=None) -> bool:
+    def check_if_available(self, day_ID, tRange: TimeRange, res_modifiying=None) -> bool:
         '''
         Check if a reservation can be created for specified day, time range,
         and (optionally) by overwriting an existing reservation
@@ -65,8 +65,23 @@ class GarageManager():
         
         '''
         c_day = self.load_day(day_ID)
-        best_lift = c_day.findBestLift(tRange, modifying=modifiying)
         
+        # If not modifying or original Res on different day, simply determine 
+        # if there is a best lift for day_ID (current day)
+        if res_modifiying == None or res_modifiying.day != day_ID:
+            best_lift = c_day.findBestLift(tRange)
+        
+        # If new time slot & old reservation (modifying) are on same day: 
+        # 1) remove old res,
+        # 2) find best lift,
+        # 3) replace old res.
+        else:
+            c_day.remove_res(res_modifiying)
+            best_lift = c_day.findBestLift(tRange)
+            c_day.write_res(res_modifiying)
+        
+        
+        # If best lift == -1, then new time range is not available
         if best_lift == -1:
             return False
         else:
@@ -167,10 +182,10 @@ if __name__ == '__main__':
     res2 = Res('2', 'smarthi', 1, start_time=1, end_time=3)
     GarageManager.write_res(res2)
     
-    GarageManager.remove_res(res1)
+    res3_tRange = TimeRange(start=1, end=2)
+    can_fit = GarageManager.check_if_available(1, res3_tRange, res2)
     
-    res3 = Res('3', 'smarthi', 1, start_time=1, end_time=3)
-    GarageManager.write_res(res3)
+    print('We can fit res3:', can_fit)
     
     print(GarageManager.load_day(1))
         

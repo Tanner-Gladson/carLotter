@@ -141,22 +141,15 @@ class Day():
         self.save()
         
         
-    def findBestLift(self, tRange: TimeRange, modifying=None):
+    def findBestLift(self, tRange: TimeRange):
         '''
-        returns the best lift to insert place Res in. If type(modifying)==Res, 
-            then accounts for possibility of overwriting a reservation 
-            ('modifiying').
-            
-        If no contiguous time slots are available, returns == -1
+        returns the best lift to insert place Res in. If no contiguous time 
+        slots are available, returns -1.
         
         Parameters
         ----------
         tRange : TimeRange
-            The time range in question.
-        
-        Modifying : None | Res
-            When modifying, provides best time by considering optional Res as 
-            'open' time.
+            The time range over contiguous slots in question.
 
         Returns
         -------
