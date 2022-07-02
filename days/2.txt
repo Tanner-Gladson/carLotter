@@ -1,6 +1,0 @@
-Day 2
-2 Lifts
-{'jooby hooby': 1, 'myReservation': 2}
-
-[[None 'abcd' None None None None None None None None None None None None None None None None None None None None None None]
- [None 'jdhf' 'jdhf' None None None None None None None None None None None None None None None None None None None None None]]
