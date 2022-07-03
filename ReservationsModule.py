@@ -6,6 +6,8 @@ Created on Fri Jun 24 17:27:21 2022
 """
 
 from calendar import c
+
+from isort import file
 from TimeUtilities import TimeRange
 import os
 
@@ -36,7 +38,7 @@ class Res():
 
     '''
 
-    def __init__(self, ID, owner, day, time_range=None, active=True, start_time=None, end_time=None):
+    def __init__(self, ID, owner, day, time_range=None, active=True, start_time=None, end_time=None, fileName=None):
         '''
         Construct Res (reservation) instance
 
@@ -49,6 +51,9 @@ class Res():
         
             start_time : float, optional
             end_time : float, optional
+        
+        fileName : str
+            The name of the file which stores the reservation. Defaults to ID
         
         active : bool, optional
         '''
@@ -67,6 +72,11 @@ class Res():
         self.owner = owner
         self.ID = ID
         self.active = active
+        
+        if fileName != None:
+            self.fileName = fileName
+        else:
+            fileName = ID
     
     
     def __str__(self):
@@ -79,21 +89,46 @@ class Res():
         '''
         save reservation object as text file.
         '''
-        fileName = f'reservations/{self.ID}.txt'.lower()
+        fileName = f'reservations/{self.fileName}.txt'.lower()
 
         with open(fileName, mode='w') as file:
             file.write(self.toString())
-            
+
+        
+
+
+class ResManager():
+    '''
+    A static class for interfacing & managing Res instances (and objects).
+    
+    Methods
+    --------
+    load_res(ID: str) -> Res
+        load the specified reservation from its file
+        
+    create_res(ID, owner, day, tRange) -> Res
+        Create a Res instance. Auto saves to file
+        
+    change_date_n_time(c_res: Res, new_d: int, new_tRange: TimeRange) -> None
+        Change the date and/or time of an existing reservation. Save.
+        
+    cancel_res(c_res: Res) -> None
+        Set the 'active' member of an existing Res to False. Save
+        
+    smite_res(ID: str) -> None
+        Deletes the file of an existing reservation. Only used for testing.
+    
+    '''
     
     @staticmethod
-    def fromFile(ID):
+    def load_res(fileName: str) -> Res:
         '''
         Creates a reservation (Res) instance from file named {ID}.txt
 
         Parameters
         ----------
-        ID : string
-            ID of reservation file to be read.
+        fileName : string
+            The file name (default ID) of reservation file to be read.
 
         Returns
         -------
@@ -103,7 +138,7 @@ class Res():
         '''
         
         # Read file
-        with open(f'reservations/{ID}.txt'.lower()) as file:
+        with open(f'reservations/{fileName}.txt'.lower()) as file:
             lines = file.read().split('\n')
 
         # Go through each line and split key from values.
@@ -137,36 +172,7 @@ class Res():
             key = line[0]
             d[positions[key]] = constructor[key](line[1])
         
-        return Res(d[0], d[1], d[2], d[3], d[4])
-
-
-class ResManager():
-    '''
-    A static class for interfacing & managing Res instances (and objects).
-    
-    Methods
-    --------
-    load_res(ID: str) -> Res
-        load the specified reservation from its file
-        
-    create_res(ID, owner, day, tRange) -> Res
-        Create a Res instance. Auto saves to file
-        
-    change_date_n_time(c_res: Res, new_d: int, new_tRange: TimeRange) -> None
-        Change the date and/or time of an existing reservation. Save.
-        
-    cancel_res(c_res: Res) -> None
-        Set the 'active' member of an existing Res to False. Save
-        
-    smite_res(ID: str) -> None
-        Deletes the file of an existing reservation. Only used for testing.
-    
-    '''
-    
-    @staticmethod
-    def load_res(ID: str) -> Res:
-        ''' Creates a reservation (Res) instance from file named {ID}.txt '''
-        return Res.fromFile(ID=ID)
+        return Res(d[0], d[1], d[2], d[3], time_range=d[4])
     
     @staticmethod
     def create_res(ID: str, owner: str, day: int, tRange: TimeRange) -> Res:

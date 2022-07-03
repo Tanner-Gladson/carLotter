@@ -81,7 +81,7 @@ class Day():
         
     
     
-    def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None):
+    def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None, fileName=None):
         '''
         Initialize values of new instance
         
@@ -98,6 +98,13 @@ class Day():
         '''
         
         self.day = day_num
+        
+        if fileName == None:
+            self.fileName = str(day_num)
+        else:
+            self.fileName = fileName
+            
+        
         self.n_lifts = num_lifts
         
         if type(reservedSlots) == np.ndarray:
@@ -213,7 +220,7 @@ class Day():
         Day.update_days_init(self.day)
     
     @staticmethod
-    def fromFiles(day_num):
+    def fromFiles(fileName):
         '''
         Read the file titled 'day_num.txt' and construct/return a Day instance
 
@@ -228,7 +235,7 @@ class Day():
             A Day instance containing all the data from the appropriate file.
 
         '''
-        filename = f'days/{day_num}.txt'
+        filename = f'days/{fileName}.txt'
         
         # Open the file, and parse out each attribute
         with open(filename, mode='r') as file:
@@ -236,10 +243,11 @@ class Day():
             
             # Find the number of lifts (2nd line, all chars before first space)
             # Find res_locs by using handy-dandy eval function
+            day_num = int(raw[0].split(' ')[-1])
             num_lifts = int(raw[1].split(' ')[0])
             res_locs = eval(raw[2])
             
-        reservedSlots = np.load(f'days/{day_num}.npy', allow_pickle=True)
+        reservedSlots = np.load(f'days/{fileName}.npy', allow_pickle=True)
         
         return Day(day_num, num_lifts, reservedSlots, res_locs)
 
