@@ -10,6 +10,38 @@ from TimeUtilities import TimeRange
 import numpy as np
 import sys
 import json
+import os
+
+class DaysIntiliazed():
+    '''
+    Keeps track of the filenames for days that have been saved.
+    '''
+    days = []
+    
+    @classmethod
+    def initialize(self):
+        '''
+        Construct the days attribute by detecting all filenames
+        in directory ../days.
+        '''
+        # Create list of all file prefixes for files that end in '.txt'
+        all_files = os.listdir(f'./days')
+        txt_files = \
+            [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
+        
+        self.days = txt_files
+        json.dump(self.days,  open('days/initiated_days.json', 'w'))
+    
+    @classmethod
+    def update_days(self, filename: str):
+        '''
+        Update and save list of days that already have corresponding file
+        '''
+        # If filename is not in days, update & save days
+        filename = str(filename)
+        if filename not in self.days:
+            self.days.append(filename)
+            json.dump(self.days,  open('days/initiated_days.json', 'w'))
 
 
 class Day():
@@ -17,10 +49,9 @@ class Day():
     Class Attributes
     -----------------
     days_initiated : list [int]
-        list of the days that have already been initiated & saved as files
+        list of filenames of days that have already been initiated & saved
     
-    
-    Attributes
+    Instance Attributes
     ----------
     day_num : Int
         The current day
@@ -37,7 +68,7 @@ class Day():
         A dictionary mapping reservation IDs to lift number
         
     Methods
-    ---------
+    -------
     remove_res(self, c_res) -> None 
         Removes all entries of a Res from ReservedSlots
         
@@ -56,34 +87,21 @@ class Day():
     __str__(self) -> String
         Return data from Day as a readable string
         
-    writeSelf(self) -> None
+    save(self) -> None
         Write data from self into a file titled self.ID.txt * self.ID.npy
     
-    @static
-    read(filename) -> Day
-        Read the files titled 'filename.txt' & 'filename.npy' to 
-        construct/return a Day instance
-        
+    @classmethod
+    initialize_days_initiated(self):
+        Initialize & update a list of filenames for the days that have files
+    
     @class
     update_days_init(Day) -> None
-        Save (pickle) list of days that have been initiated
+        Update (pickle) list of days that have been initiated
         
     
     '''
     
-    days_initiated = json.load(open('days/initiated_days.json'))
-    
-    # TODO #2
-    @classmethod
-    def update_days_init(self, day):
-        '''
-        Update and save list of days that already have corresponding file
-        '''
-        if day not in Day.days_initiated:
-            self.days_initiated.append(day)
-            json.dump(self.days_initiated,  open('days/initiated_days.json', 'w'))
-        
-    
+    DaysIntiliazed.initialize()
     
     def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None, filename=None):
         '''
@@ -233,7 +251,7 @@ class Day():
             
         np.save(f'days/{self.filename}', self.reservedSlots)
         
-        Day.update_days_init(self.day)
+        DaysIntiliazed.update_days(self.day)
     
 
 class GarageManager():
@@ -280,7 +298,7 @@ class GarageManager():
     default_num_lifts = 2
 
     @classmethod
-    def check_if_available(self, day_ID, tRange: TimeRange, res_modifiying=None) -> bool:
+    def check_if_available(self, day_num, tRange: TimeRange, res_modifiying=None) -> bool:
         '''
         TODO #1 Does not consider shifting reservations around
         Check if a reservation can be created for specified day, time range,
@@ -300,11 +318,11 @@ class GarageManager():
         bool
         
         '''
-        c_day = self.load_day(day_ID)
+        c_day = self.load_day(day_num)
         
         # If not modifying or original Res on different day, simply determine 
         # if there is a best lift for day_ID (current day)
-        if res_modifiying == None or res_modifiying.day != day_ID:
+        if res_modifiying == None or res_modifiying.day != day_num:
             best_lift = c_day.findBestLift(tRange)
         
         # If new time slot & old reservation (modifying) are on same day: 
@@ -343,6 +361,7 @@ class GarageManager():
         c_day = self.load_day(c_res.day)
         c_day.write_res(c_res)
     
+    
     @classmethod
     def findLift(self, c_res: Res) -> int:
         '''
@@ -359,7 +378,7 @@ class GarageManager():
     
     
     @classmethod
-    def load_day(self, day_ID: int, filename=None) -> Day:
+    def load_day(self, day_num: int, filename=None) -> Day:
         '''
         Loads day 'day_id' if possible. Else, creates new Day instance 
         (and corresponding files). 
@@ -377,11 +396,11 @@ class GarageManager():
         Day instance
         '''
         if filename == None:
-            filename = day_ID
+            filename = day_num
         
         # If day has not been initiated, create not (don't try to load)
-        if day_ID not in Day.days_initiated:
-            return self.create_day(day_ID)
+        if day_num not in DaysIntiliazed.days:
+            return self.create_day(day_num)
         
         # If day has been initiated, load.
         else:
@@ -404,7 +423,7 @@ class GarageManager():
     
     
     @staticmethod
-    def create_day(day_ID: int, n_lifts=default_num_lifts) -> Day:
+    def create_day(day_num: int, n_lifts=default_num_lifts) -> Day:
         '''
         Constructs new Day instance with ID 'day'. Automatically saves to files
         
@@ -419,15 +438,15 @@ class GarageManager():
             
         Return: Day instance
         '''
-        return (Day(day_ID, n_lifts))
+        return (Day(day_num, n_lifts))
     
     
     @classmethod
-    def reset_day(self, day_ID: int, n_lifts=default_num_lifts) -> None:
+    def reset_day(self, day_num: int, n_lifts=default_num_lifts) -> None:
         '''
         Resets all the data from a day.
         '''
-        self.create_day(day_ID, self.default_num_lifts)
+        self.create_day(day_num, self.default_num_lifts)
         
 
 
@@ -445,6 +464,6 @@ if __name__ == '__main__':
     res3_tRange = TimeRange(start=1, end=2)
     can_fit = GarageManager.check_if_available(1, res3_tRange, res2)
     
-    print('We can fit res3:', can_fit)
+    #print('We can fit res3:', can_fit)
     
-    print(GarageManager.load_day(1))
+    #print(GarageManager.load_day(1))
