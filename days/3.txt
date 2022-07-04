@@ -2,5 +2,5 @@ Day 3
 2 Lifts
 {}
 
-[[None '1234' '1234' 'yote' 'yote' None None None None None None None None None None None None None None None None None None None]
- [None '897' '897' '897' None None None None None None None None None None None None None None None None None None None None]]
+[[None '897' '897' '897' None None None None None None None None None None None None None None None None None None None None]
+ [None None None None None None None None None None None None None None None None None None None None None None None None]]

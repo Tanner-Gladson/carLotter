@@ -14,7 +14,8 @@ import os
 
 class DaysIntiliazed():
     '''
-    Keeps track of the filenames for days that have been saved.
+    A static class for tracking what days have been previously initiliazed and
+    saved. Accounts for async, manual deletion/modification of files.
     '''
     days = []
     
@@ -30,18 +31,20 @@ class DaysIntiliazed():
             [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
         
         self.days = txt_files
-        json.dump(self.days,  open('days/initiated_days.json', 'w'))
+        with open('days/initiated_days.json', 'w+') as file:
+            json.dump(self.days, file)
     
     @classmethod
     def update_days(self, filename: str):
         '''
         Update and save list of days that already have corresponding file
         '''
-        # If filename is not in days, update & save days
+        # If filename is not in days, update & save days to json
         filename = str(filename)
         if filename not in self.days:
             self.days.append(filename)
-            json.dump(self.days,  open('days/initiated_days.json', 'w'))
+            with open('days/initiated_days.json', 'w+') as file:
+                json.dump(self.days, file)
 
 
 class Day():
@@ -464,6 +467,6 @@ if __name__ == '__main__':
     res3_tRange = TimeRange(start=1, end=2)
     can_fit = GarageManager.check_if_available(1, res3_tRange, res2)
     
-    #print('We can fit res3:', can_fit)
+    print('We can fit res3:', can_fit)
     
-    #print(GarageManager.load_day(1))
+    print(GarageManager.load_day(1))

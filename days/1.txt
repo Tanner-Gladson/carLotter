@@ -2,5 +2,5 @@ Day 1
 2 Lifts
 {}
 
-[[None '2' '2' None None None None None None None None None None None None None None None None None None None None None]
+[[None None None None None None None None None None None None None None None None None None None None None None None None]
  [None None None None None None None None None None None None None None None None None None None None None None None None]]
