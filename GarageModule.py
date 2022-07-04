@@ -50,6 +50,9 @@ class Day():
             Only != None when called by liftManager class
         - If no spot available, return == 0
         
+    findLift(c_res: Res) -> int
+        Return the index of the lift in which a reservation resides
+        
     __str__(self) -> String
         Return data from Day as a readable string
         
@@ -195,6 +198,19 @@ class Day():
         
         return b_lift
         
+    def findLift(self, c_res: Res) -> int:
+        '''
+        Return the index of the lift in which a reservation resides
+        
+        Parameters
+        ----------
+        c_res : Res
+            The reservation in question
+        '''
+        # Find the first coordinate of the first 'ID' value in reservedSlots
+        return np.where(self.reservedSlots == c_res.ID)[0][0]
+        
+        
     
     def __str__(self) -> str:
         
@@ -210,12 +226,12 @@ class Day():
         '''
         Write all data from self to text file & numpy file
         '''
-        filename = f'days/{self.day}.txt'
+        filename = f'days/{self.fileName}.txt'
         
         with open(filename, mode='w') as file:
             file.write(str(self))
             
-        np.save(f'days/{self.day}', self.reservedSlots)
+        np.save(f'days/{self.fileName}', self.reservedSlots)
         
         Day.update_days_init(self.day)
     
@@ -282,7 +298,9 @@ class GarageManager():
         
     reset_day(day_ID: int, n_lifts: int) -> None
         Resets all the data from a day.
-        
+    
+    findLift(c_res: Res) -> int:
+        Return the index of the lift in which a reservation resides
         
     Class Attributes
     ----------------
@@ -295,6 +313,7 @@ class GarageManager():
     @classmethod
     def check_if_available(self, day_ID, tRange: TimeRange, res_modifiying=None) -> bool:
         '''
+        TODO #1 Does not consider shifting reservations around
         Check if a reservation can be created for specified day, time range,
         and (optionally) by overwriting an existing reservation
         
@@ -351,33 +370,24 @@ class GarageManager():
         '''
         Loads the correct day, and writes c_res.ID to appropriate time slots
         '''
+        
         c_day = self.load_day(c_res.day)
         c_day.write_res(c_res)
     
-    '''
-    TODO
     @classmethod
-    def modify_res(self, old_res: Res, new_d, TimeRange) -> None:
-        
-        1) removes reservation ID from previous days & times
-        2) Write's reservation ID into new day, with new start & end
-        - ASSUMES that writing the reservation is legal
+    def findLift(self, c_res: Res) -> int:
+        '''
+        Return the index of the lift in which a reservation resides
         
         Parameters
-        -----------
-        old_res : Res
-            The pre-modification reservation instance
-            
-        new_d, new_s, new_e : int, float, float
-            The new day and start+end times
-        
-        ??? MOVE THIS FUNCTION UP TO A HIGHER LEVEL ????
-        self.remove_res(old_res)
-        self.write_res(??)
-        
-        
-        pass
+        ----------
+        c_res : Res
+            The reservation in question
         '''
+        
+        c_day = self.load_day(c_res.day)
+        return c_day.findLift(c_res)
+    
     
     @classmethod
     def load_day(self, day_ID: int) -> Day:

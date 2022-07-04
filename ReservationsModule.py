@@ -76,7 +76,7 @@ class Res():
         if fileName != None:
             self.fileName = fileName
         else:
-            fileName = ID
+            self.fileName = ID
     
     
     def __str__(self):
@@ -172,10 +172,10 @@ class ResManager():
             key = line[0]
             d[positions[key]] = constructor[key](line[1])
         
-        return Res(d[0], d[1], d[2], d[3], time_range=d[4])
+        return Res(d[0], d[1], d[2], d[3], d[4])
     
     @staticmethod
-    def create_res(ID: str, owner: str, day: int, tRange: TimeRange) -> Res:
+    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, fileName=None) -> Res:
         '''
         Create a Res instance. Auto saves to file
         
@@ -194,14 +194,14 @@ class ResManager():
             Time range of reservation (attributes start & end)
         '''
         
-        c_res = Res(ID=ID, owner=owner, day=day, time_range=tRange)
+        c_res = Res(ID=ID, owner=owner, day=day, time_range=tRange, fileName=fileName)
         c_res.save()
         return c_res
     
     @staticmethod
     def change_date_n_time(c_res: Res, new_d: int, new_tRange: TimeRange) -> None:
         '''
-        Update the date and time of a reservation
+        Update the date and time of a reservation instance. Overwrite file
         
         Parameters
         ----------
