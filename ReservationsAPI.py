@@ -40,7 +40,7 @@ class ReservationAPI():
     
     '''
     @staticmethod
-    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, fileName=None) -> Res:
+    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> Res:
         '''
         Create and save a new Res instance / file. Fill appropriate 
         timeslots in 'days'
@@ -59,7 +59,7 @@ class ReservationAPI():
         tRange : TimeRange
             Time range spanned by new reservation.
         
-        fileName : str (optional)
+        filename : str (optional)
             Optional filepath of the reservation's corresponding file
             
         Returns
@@ -69,7 +69,7 @@ class ReservationAPI():
         
         '''
         if GarageManager.check_if_available(day, tRange=tRange):
-            c_res = ResManager.create_res(ID, owner, day, tRange, fileName=fileName)
+            c_res = ResManager.create_res(ID, owner, day, tRange, filename=filename)
             GarageManager.write_res(c_res)
             return c_res
         else:
@@ -86,7 +86,7 @@ class ReservationAPI():
         ID : str
             The unique identifier of the reservation being modified.
         '''
-        c_res = ResManager.load_res(fileName=ID)
+        c_res = ResManager.load_res(filename=ID)
         GarageManager.remove_res(c_res)
         ResManager.cancel_res(c_res)
         
@@ -100,20 +100,20 @@ class ReservationAPI():
         ID : str
             The unique identifier of the reservation in question.
         '''
-        c_res = ResManager.load_res(fileName=ID)
+        c_res = ResManager.load_res(filename=ID)
         return GarageManager.findLift(c_res)
     
     @staticmethod
-    def get_res(fileName: str) -> Res:
+    def get_res(filename: str) -> Res:
         '''
         Loads Res object from file & returns. 
         
         Parameters
         ----------
-        fileName : str
-            The reservation's file name. By default, fileName == Res.ID.
+        filename : str
+            The reservation's file name. By default, filename == Res.ID.
         '''
-        return ResManager.load_res(fileName)
+        return ResManager.load_res(filename)
     
     @staticmethod
     def query_modify_res(res_ID: str, new_d: int, new_tRange: TimeRange) -> bool:
@@ -135,7 +135,7 @@ class ReservationAPI():
         
         '''
         
-        c_res = ResManager.load_res(fileName = res_ID)
+        c_res = ResManager.load_res(filename = res_ID)
         return GarageManager.check_if_available(new_d, new_tRange, res_modifiying=c_res)
     
     @staticmethod
@@ -158,7 +158,7 @@ class ReservationAPI():
         Returns : bool (true = successfully modified)
         '''
         # Check if the time range is open
-        c_res = ResManager.load_res(fileName = res_ID)
+        c_res = ResManager.load_res(filename = res_ID)
         can_modify = GarageManager.check_if_available\
             (new_d, new_tRange, res_modifiying=c_res)
         

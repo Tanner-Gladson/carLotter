@@ -38,7 +38,7 @@ class Res():
 
     '''
 
-    def __init__(self, ID, owner, day, time_range=None, active=True, start_time=None, end_time=None, fileName=None):
+    def __init__(self, ID, owner, day, time_range=None, active=True, start_time=None, end_time=None, filename=None):
         '''
         Construct Res (reservation) instance
 
@@ -52,7 +52,7 @@ class Res():
             start_time : float, optional
             end_time : float, optional
         
-        fileName : str
+        filename : str
             The name of the file which stores the reservation. Defaults to ID
         
         active : bool, optional
@@ -73,10 +73,10 @@ class Res():
         self.ID = ID
         self.active = active
         
-        if fileName != None:
-            self.fileName = fileName
+        if filename != None:
+            self.filename = filename
         else:
-            self.fileName = ID
+            self.filename = ID
     
     
     def __str__(self):
@@ -89,9 +89,9 @@ class Res():
         '''
         save reservation object as text file.
         '''
-        fileName = f'reservations/{self.fileName}.txt'.lower()
+        filename = f'reservations/{self.filename}.txt'.lower()
 
-        with open(fileName, mode='w') as file:
+        with open(filename, mode='w') as file:
             file.write(self.toString())
 
 
@@ -120,13 +120,13 @@ class ResManager():
     '''
     
     @staticmethod
-    def load_res(fileName: str) -> Res:
+    def load_res(filename: str) -> Res:
         '''
         Creates a reservation (Res) instance from file named {ID}.txt
 
         Parameters
         ----------
-        fileName : string
+        filename : string
             The file name (default ID) of reservation file to be read.
 
         Returns
@@ -137,7 +137,7 @@ class ResManager():
         '''
         
         # Read file
-        with open(f'reservations/{fileName}.txt'.lower()) as file:
+        with open(f'reservations/{filename}.txt'.lower()) as file:
             lines = file.read().split('\n')
 
         # Go through each line and split key from values.
@@ -174,7 +174,7 @@ class ResManager():
         return Res(d[0], d[1], d[2], d[3], d[4])
     
     @staticmethod
-    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, fileName=None) -> Res:
+    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> Res:
         '''
         Create a Res instance. Auto saves to file
         
@@ -193,7 +193,7 @@ class ResManager():
             Time range of reservation (attributes start & end)
         '''
         
-        c_res = Res(ID=ID, owner=owner, day=day, time_range=tRange, fileName=fileName)
+        c_res = Res(ID=ID, owner=owner, day=day, time_range=tRange, filename=filename)
         c_res.save()
         return c_res
     

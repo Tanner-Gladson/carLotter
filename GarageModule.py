@@ -85,7 +85,7 @@ class Day():
         
     
     
-    def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None, fileName=None):
+    def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None, filename=None):
         '''
         Initialize values of new instance
         
@@ -103,10 +103,10 @@ class Day():
         
         self.day = day_num
         
-        if fileName == None:
-            self.fileName = str(day_num)
+        if filename == None:
+            self.filename = str(day_num)
         else:
-            self.fileName = fileName
+            self.filename = filename
             
         
         self.n_lifts = num_lifts
@@ -227,17 +227,17 @@ class Day():
         '''
         Write all data from self to text file & numpy file
         '''
-        filename = f'days/{self.fileName}.txt'
+        filename = f'days/{self.filename}.txt'
         
         with open(filename, mode='w') as file:
             file.write(str(self))
             
-        np.save(f'days/{self.fileName}', self.reservedSlots)
+        np.save(f'days/{self.filename}', self.reservedSlots)
         
         Day.update_days_init(self.day)
     
     @staticmethod
-    def fromFiles(fileName):
+    def fromFiles(filename):
         '''
         Read the file titled 'day_num.txt' and construct/return a Day instance
 
@@ -252,7 +252,7 @@ class Day():
             A Day instance containing all the data from the appropriate file.
 
         '''
-        filename = f'days/{fileName}.txt'
+        filename = f'days/{filename}.txt'
         
         # Open the file, and parse out each attribute
         with open(filename, mode='r') as file:
@@ -264,7 +264,7 @@ class Day():
             num_lifts = int(raw[1].split(' ')[0])
             res_locs = eval(raw[2])
             
-        reservedSlots = np.load(f'days/{fileName}.npy', allow_pickle=True)
+        reservedSlots = np.load(f'days/{filename}.npy', allow_pickle=True)
         
         return Day(day_num, num_lifts, reservedSlots, res_locs)
 
