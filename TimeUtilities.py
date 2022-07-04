@@ -59,8 +59,6 @@ class TimeRange():
 
         '''
         # Call fromString to assign start & end times
-        
-        
         if string != None:
             self.start, self.end = TimeRange.__fromString(string)
             
