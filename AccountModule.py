@@ -9,6 +9,9 @@ import json
 import os
 import pickle
 
+from numpy import nonzero
+from ReservationsModule import Res
+
 class AcctsInitiliazed():
     '''
     A static class for tracking what accounts have been initiliazed and
@@ -57,7 +60,8 @@ class AcctsInitiliazed():
 
 class Acct():
     '''
-    The non-static class for containing information in a user's account.
+    The non-static class for containing information in a user's account. Saved
+    to txt and pickle files in ../accounts/
     
     Attributes
     ----------
@@ -83,8 +87,6 @@ class Acct():
     __str__(self) -> str
         Overload string operator to print readable account summary.
         
-    smite_acct(self) -> None:
-        Remove the account file & update DaysIntiliazed.days. For testing only
     '''
     AcctsInitiliazed.initialize()
     
@@ -128,21 +130,145 @@ class Acct():
         
         with open(f'accounts/{self.filename}.txt', 'w+') as file:
             file.write(self.__str__())
+        
+        AcctsInitiliazed.update(c_filename=self.filename)
 
 
 class AccountManager():
     '''
     Static class for creating, loading, and modifying accounts.
     
-    Attributes
-    ----------
-    
-    
     Methods
     ------ 
+    load_acct(filename: str) -> Acct:
+        Loads and constructs an account instance from files
+        
+    create_acct(username: str, password: str, filename=None) -> Acct:
+        Creates a new account instance and appropriate files
     
+    add_reservation_to_acct(c_account: Acct, c_res: Res):
+        Add a reservation to list of reservations. Update account files
+        
+    change_password\
+        (c_account: Acct, old_password: str, new_password: str) -> None:
+        Change the account's password
+    
+    smite_acct(username: str) -> None:
+        Remove the files associated with username
+    
+    @class
+    unlist_reservations(username: str) -> None:
+        Reset the list of reservations associated with this account.
+        **for testing only
     '''
     
+    @staticmethod
+    def load_acct(filename: str, password: str) -> Acct:
+        '''
+        Loads and constructs an account instance from files. Returns none if
+        wrong password provided
+        
+        Parameters
+        ----------
+        filename : str
+            The filename associated with an account. Default is username
+        password : str
+            The password to log into the account.
+        '''
+        #unpickle file
+        with open(f'accounts/{filename}.pickle', 'rb') as file:
+            c_account = pickle.load(file)
+            
+        if c_account.password == password:
+            return c_account
+        else:
+            return None
+        
+    @staticmethod
+    def create_acct(username: str, password: str, filename=None) -> Acct:
+        '''
+        Creates a new account instance and appropriate files
+        
+        Parameters
+        ----------
+        username : str
+            The username of the account
+        password : str
+            The password to log into the account
+        filename : str (default None)
+            The filename which points the account's save location
+        '''
+        return Acct(username, password, filename)
+        
+    
+    @staticmethod
+    def add_reservation_to_acct(c_account: Acct, c_res: Res) -> None:
+        '''
+        Append a reservation to list of reservations. Update account files
+        
+        Parameters
+        ----------
+        c_account : Acct
+            The account to modify
+            
+        c_res : Res
+            The reservation to modify
+        '''
+        c_account.reservations.append(c_res.ID)
+        c_account.save()
+        
+        
+    @staticmethod
+    def change_password\
+        (c_account: Acct, old_password: str, new_password: str) -> bool:
+        '''
+        Change the account's password. Returns True if successful
+        
+        Parameters
+        ----------
+        c_account : Acct
+            The account we want to change the password for
+        old_password : str
+            The old password
+        new_password : str
+            The new password
+        '''
+        if old_password == c_account.password:
+            c_account.password = new_password
+            return True
+        
+        else:
+            return False
+    
+    
+    @staticmethod
+    def smite_acct(filename=None) -> None:
+        '''
+        Remove the files associated with username. For testing only.
+        '''
+        
+        os.remove(f'./accounts/{filename}.txt')
+        os.remove(f'./accounts/{filename}.pickle')
+        AcctsInitiliazed.initialize()
+        
+    
+    @classmethod
+    def unlist_reservations(self, filename: str) -> None:
+        '''
+        Reset the list of reservations associated with this account.
+        **for testing only
+        '''
+        # TODO verify by testing
+        c_account = self.load_acct(filename)
+        c_account.reservations = []
+        c_account.save()
+
+    
+    
 if __name__ == '__main__':
-    my_account = Acct('Smarthi', '')
-    print(my_account)
+    AccountManager.smite_acct('Smarthi')
+    AccountManager.create_acct('Smarthi', 'pass')
+    
+    
+    
+    pass
