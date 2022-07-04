@@ -12,7 +12,6 @@ class ReservationAPI():
         Create and save a new Res instance / file. Fill appropriate 
         timeslots in 'days'
     
-    
     cancel_res(ID: str) -> None
         Remove the specified reservation from time slots & change active
         attribute in files.

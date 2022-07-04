@@ -73,6 +73,7 @@ class Day():
     
     days_initiated = json.load(open('days/initiated_days.json'))
     
+    # TODO #2
     @classmethod
     def update_days_init(self, day):
         '''

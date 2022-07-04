@@ -94,7 +94,6 @@ class Res():
         with open(fileName, mode='w') as file:
             file.write(self.toString())
 
-        
 
 
 class ResManager():
