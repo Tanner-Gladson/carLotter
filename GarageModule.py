@@ -60,12 +60,12 @@ class Day():
         Write data from self into a file titled self.ID.txt * self.ID.npy
     
     @static
-    read(day_num) -> Day
-        Read the files titled 'day_num.txt' & 'day_num.npy' to 
+    read(filename) -> Day
+        Read the files titled 'filename.txt' & 'filename.npy' to 
         construct/return a Day instance
         
     @class
-    save_days_init(Day) -> None
+    update_days_init(Day) -> None
         Save (pickle) list of days that have been initiated
         
     
@@ -122,9 +122,7 @@ class Day():
             self.res_locs = {}
             
         self.save()
-        Day.update_days_init(day_num)
         
-            
     
     def remove_res(self, c_res: Res) -> None:
         '''
@@ -199,6 +197,7 @@ class Day():
         
         return b_lift
         
+        
     def findLift(self, c_res: Res) -> int:
         '''
         Return the index of the lift in which a reservation resides
@@ -210,8 +209,7 @@ class Day():
         '''
         # Find the first coordinate of the first 'ID' value in reservedSlots
         return np.where(self.reservedSlots == c_res.ID)[0][0]
-        
-        
+    
     
     def __str__(self) -> str:
         
@@ -222,7 +220,8 @@ class Day():
         s4 = np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
         
         return f'{s1}\n{s2}\n{s3}\n\n{s4}'
-        
+    
+    
     def save(self) -> None:
         '''
         Write all data from self to text file & numpy file
@@ -236,37 +235,6 @@ class Day():
         
         Day.update_days_init(self.day)
     
-    @staticmethod
-    def fromFiles(filename):
-        '''
-        Read the file titled 'day_num.txt' and construct/return a Day instance
-
-        Parameters
-        ----------
-        day_num : int
-            What day to read.
-
-        Returns
-        -------
-        Day
-            A Day instance containing all the data from the appropriate file.
-
-        '''
-        filename = f'days/{filename}.txt'
-        
-        # Open the file, and parse out each attribute
-        with open(filename, mode='r') as file:
-            raw = file.read().split('\n') #split by line
-            
-            # Find the number of lifts (2nd line, all chars before first space)
-            # Find res_locs by using handy-dandy eval function
-            day_num = int(raw[0].split(' ')[-1])
-            num_lifts = int(raw[1].split(' ')[0])
-            res_locs = eval(raw[2])
-            
-        reservedSlots = np.load(f'days/{filename}.npy', allow_pickle=True)
-        
-        return Day(day_num, num_lifts, reservedSlots, res_locs)
 
 class GarageManager():
     '''
@@ -391,18 +359,48 @@ class GarageManager():
     
     
     @classmethod
-    def load_day(self, day_ID: int) -> Day:
+    def load_day(self, day_ID: int, filename=None) -> Day:
         '''
         Loads day 'day_id' if possible. Else, creates new Day instance 
-        (and corresponding files).
+        (and corresponding files). 
         
-        Return: Day instance
-        '''
-        if day_ID in Day.days_initiated:
-            return Day.fromFiles(day_ID)
+        Parameters
+        -----------
+        day_ID : int
+            The day # to be loaded
             
-        else:
+        filename: None | str
+            An optional filename or filepath for the day's file.
+        
+        Return
+        -------
+        Day instance
+        '''
+        if filename == None:
+            filename = day_ID
+        
+        # If day has not been initiated, create not (don't try to load)
+        if day_ID not in Day.days_initiated:
             return self.create_day(day_ID)
+        
+        # If day has been initiated, load.
+        else:
+            txt_file_name = f'days/{filename}.txt'
+            np_file_name = f'days/{filename}.npy'
+            
+            # Open the file, and parse out each attribute
+            with open(txt_file_name, mode='r') as file:
+                raw = file.read().split('\n') #split by line
+                
+                # Find the number of lifts (2nd line, all chars before first space)
+                # Find res_locs by using handy-dandy eval function
+                day_num = int(raw[0].split(' ')[-1])
+                num_lifts = int(raw[1].split(' ')[0])
+                res_locs = eval(raw[2])
+                
+            reservedSlots = np.load(np_file_name, allow_pickle=True)
+            
+            return Day(day_num, num_lifts, reservedSlots, res_locs)
     
     
     @staticmethod
@@ -422,6 +420,7 @@ class GarageManager():
         Return: Day instance
         '''
         return (Day(day_ID, n_lifts))
+    
     
     @classmethod
     def reset_day(self, day_ID: int, n_lifts=default_num_lifts) -> None:
