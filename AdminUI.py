@@ -86,8 +86,9 @@ class AdminUI():
         
         while not quit:
             print()
+            print()
             user_in = input(f'>>> Enter command: ')
-            print('=======================================================================')
+            print('-----------------------------------------------------------------------')
             print()
             command = user_in.split(' ')
             
@@ -214,7 +215,25 @@ class AdminUI():
         command : list[str]
             The user's input, split into list by spaces
         '''
-        pass
+        if command[1] == 'list':
+            if len(command) != 2:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "day list"'
+            else:
+                out_string = self.dayList()
+                
+        elif command[1] == 'view':
+            if len(command) != 3:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "day view [day]"'
+            else:
+                out_string = self.dayView()
+                
+        else:
+            out_string = 'Command not found. Type "help" for more info'
+        
+        return out_string
+    
     
     @classmethod
     def help(self) -> str:
