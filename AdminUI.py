@@ -6,7 +6,8 @@ Created on Fri Jun 24 17:23:21 2022
 """
 from TimeUtilities import TimeRange, TimeTools
 from ReservationsAPI import ReservationAPI
-from AccountModule import AccountManager
+from GarageModule import DaysIntiliazed, GarageManager
+from AccountModule import AccountManager, AcctsInitiliazed
 
 
 class AdminUI():
@@ -135,11 +136,11 @@ class AdminUI():
                 out_string = self.accountList()
         
         elif command[1] == 'view':
-            if len(command) != 3:
+            if len(command) != 4:
                 out_string = 'Wrong number of arguments for this command.\n\n' \
-                    'Try: "account view [username]"'
+                    'Try: "account view [username] [password]"'
             else:
-                out_string = self.accountView(command[2])
+                out_string = self.accountView(command[2], command[3])
         
         elif command[1] == 'create':
             if len(command) != 4:
@@ -171,7 +172,7 @@ class AdminUI():
             The user's input, split into list by spaces
         '''
         if command[1] == 'create':
-            if len(command) != 6:
+            if len(command) != 7:
                 out_string = 'Wrong number of arguments for this command.\n\n' \
                     'Try: "reservation create [username] [ID] [day] [start time] [end time]"'
             else:
@@ -227,13 +228,12 @@ class AdminUI():
                 out_string = 'Wrong number of arguments for this command.\n\n' \
                     'Try: "day view [day]"'
             else:
-                out_string = self.dayView()
+                out_string = self.dayView(command[2])
                 
         else:
             out_string = 'Command not found. Type "help" for more info'
         
         return out_string
-    
     
     @classmethod
     def help(self) -> str:
@@ -246,7 +246,7 @@ class AdminUI():
             '     List all the account usernames.\n\n' \
             'account create [username] [password]\n' \
             '    Create a new account.\n\n'  \
-            'account view [username]\n' \
+            'account view [username] [password]\n' \
             '    View the information of an account.\n\n'     \
             'account change password [username] [old password] [new password]\n' \
             '    Create a new account (will also overwrite).\n\n'    \
@@ -268,7 +268,11 @@ class AdminUI():
         '''
         Return a formatted list of filenames (day IDs) in the ./days directory
         '''
-        pass
+        s = 'Days initialized:\n'
+        for item in DaysIntiliazed.days:
+            s += f'{item}\n'
+            
+        return s
     
     @classmethod
     def dayView(self, ID: str) -> str:
@@ -277,9 +281,11 @@ class AdminUI():
         
         Parameters
         -----------
-        
+        ID : str
+            By default, the day number
         '''
-        pass
+        c_day = GarageManager.load_day(ID)
+        return str(c_day)
     
     @classmethod
     def accountList(self) -> str:
@@ -287,11 +293,14 @@ class AdminUI():
         Returns a formatted list of filenames (usernames) in the ./accounts
         directory.
         '''
-        pass
-        
+        s = 'Accounts initialized:\n'
+        for item in AcctsInitiliazed.accts:
+            s += f'{item}\n'
+            
+        return s
     
     @classmethod
-    def accountView(self, username: str) -> str:
+    def accountView(self, username: str, password: str) -> str:
         '''
         Returns a formatted view of a specific account's data
         
@@ -299,7 +308,7 @@ class AdminUI():
         -----------
         
         '''
-        pass
+        return str(AccountManager.load_acct(username, password))
         
     @classmethod
     def accountCreate(self, username: str, password: str) -> str:
@@ -308,21 +317,36 @@ class AdminUI():
         
         Parameters
         -----------
-        
+        username : str
+            Account should have this username
+            
+        password : str
+            Account should have this password
         '''
-        pass
+        try:
+            AccountManager.create_acct(username, password)
+            return f'Account successfully created!'
+        except:
+            return f'An error occurred, could not create account'
     
     @classmethod
     def accountChangePassword \
-        (self: str, username: str, old_pass: str, new_pass: str) -> str:
+        (self, username: str, old_pass: str, new_pass: str) -> str:
         '''
         Change the password of an account. Return a str giving confirmation
         
         Parameters
         -----------
-        
+        username : str
+            Username of current account
+        old_pass : str
+            Old password
+        new_pass : str
+            New password
         '''
-        pass
+        c_account = AccountManager.load_acct(username, old_pass)
+        success = AccountManager.change_password(c_account, old_pass, new_pass)
+        return success 
     
     @classmethod
     def reservationCreate \
@@ -332,7 +356,10 @@ class AdminUI():
         
         Parameters
         -----------
-        
+        username : str
+            The new owner of the new reservation
+        ID : str
+            The TODO starting from here
         '''
         pass
     

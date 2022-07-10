@@ -235,6 +235,7 @@ class AccountManager():
         '''
         if old_password == c_account.password:
             c_account.password = new_password
+            c_account.save()
             return True
         
         else:
