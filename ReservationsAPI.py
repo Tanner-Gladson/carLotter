@@ -1,3 +1,4 @@
+from AccountModule import AccountManager
 from ReservationsModule import Res, ResManager
 from TimeUtilities import TimeRange
 from GarageModule import GarageManager
@@ -40,10 +41,10 @@ class ReservationAPI():
     
     '''
     @staticmethod
-    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> Res:
+    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> (bool, str):
         '''
         Create and save a new Res instance / file. Fill appropriate 
-        timeslots in 'days'
+        timeslots in 'days'. Add that reservation to appropriate account
         
         Paramters
         ----------
@@ -71,9 +72,9 @@ class ReservationAPI():
         if GarageManager.check_if_available(day, tRange=tRange):
             c_res = ResManager.create_res(ID, owner, day, tRange, filename=filename)
             GarageManager.write_res(c_res)
-            return c_res
+            return True, f'Successfully created reservation on day {day} from {str(tRange)}'
         else:
-            raise ValueError(f'Cannot create the following reservation \n{c_res}')
+            return False, f'Cannot create a reservation on day {day} from {str(tRange)}'
     
     @staticmethod
     def cancel_res(ID: str) -> None:

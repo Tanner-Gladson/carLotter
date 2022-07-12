@@ -10,6 +10,7 @@ import os
 import pickle
 
 from numpy import nonzero
+from GarageModule import DaysIntiliazed
 from ReservationsModule import Res
 
 class AcctsInitiliazed():
@@ -155,11 +156,15 @@ class AccountManager():
     
     smite_acct(username: str) -> None:
         Remove the files associated with username
+        
+    list_accounts_initialized() -> list
+        Lists the account files that have been intiliazed
     
     @class
     unlist_reservations(username: str) -> None:
         Reset the list of reservations associated with this account.
         **for testing only
+        
     '''
     
     @staticmethod
@@ -251,7 +256,10 @@ class AccountManager():
         os.remove(f'./accounts/{filename}.txt')
         os.remove(f'./accounts/{filename}.pickle')
         AcctsInitiliazed.initialize()
-        
+    
+    @staticmethod
+    def list_accounts_initialized() -> list:
+        return AcctsInitiliazed.accts[:]
     
     @classmethod
     def unlist_reservations(self, filename: str) -> None:
@@ -267,9 +275,5 @@ class AccountManager():
     
     
 if __name__ == '__main__':
-    AccountManager.smite_acct('Smarthi')
-    AccountManager.create_acct('Smarthi', 'pass')
-    
-    
-    
+    print(AccountManager.list_accounts_initialized())
     pass
