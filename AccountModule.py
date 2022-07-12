@@ -167,26 +167,20 @@ class AccountManager():
     '''
     
     @staticmethod
-    def load_acct(filename: str, password: str) -> Acct:
+    def load_acct_from_file(filename: str) -> Acct:
         '''
-        Loads and constructs an account instance from files. Returns none if
-        wrong password provided
+        Loads and constructs an account instance from files.
         
         Parameters
         ----------
         filename : str
             The filename associated with an account. Default is username
-        password : str
-            The password to log into the account.
         '''
         #unpickle file
         with open(f'accounts/{filename}.pickle', 'rb') as file:
             c_account = pickle.load(file)
             
-        if c_account.password == password:
-            return c_account
-        else:
-            return None
+        return c_account
         
     @staticmethod
     def create_acct(username: str, password: str, filename=None) -> Acct:
@@ -249,7 +243,7 @@ class AccountManager():
     @staticmethod
     def smite_acct(filename=None) -> None:
         '''
-        Remove the files associated with username. For testing only.
+        Remove the files associated with username. **For testing only.
         '''
         
         os.remove(f'./accounts/{filename}.txt')
@@ -270,7 +264,7 @@ class AccountManager():
         **for testing only
         '''
         # TODO verify by testing
-        c_account = self.load_acct(filename)
+        c_account = self.load_acct_from_file(filename)
         c_account.reservations = []
         c_account.save()
 
