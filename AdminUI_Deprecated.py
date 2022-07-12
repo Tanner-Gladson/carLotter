@@ -307,9 +307,10 @@ class AdminUI():
         
         Parameters
         -----------
-        
+        TODO load_acc_from_file no longer takes password
         '''
-        return str(AccountManager.load_acct(username, password))
+        
+        return str(AccountManager.load_acct_from_file(username, password))
         
     @classmethod
     def accountCreate(self, username: str, password: str) -> str:
@@ -341,7 +342,8 @@ class AdminUI():
         new_pass : str
             New password
         '''
-        c_account = AccountManager.load_acct(username, old_pass)
+        #TODO load_acct_from_file no longer takes password
+        c_account = AccountManager.load_acct_from_file(username, old_pass)
         success = AccountManager.change_password(c_account, old_pass, new_pass)
         return success 
     
