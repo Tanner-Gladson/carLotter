@@ -10,7 +10,6 @@ import os
 import pickle
 
 from numpy import nonzero
-from GarageModule import DaysIntiliazed
 from ReservationsModule import Res
 
 class AcctsInitiliazed():
@@ -259,6 +258,9 @@ class AccountManager():
     
     @staticmethod
     def list_accounts_initialized() -> list:
+        '''
+        Return a list of the accounts that have been initialized
+        '''
         return AcctsInitiliazed.accts[:]
     
     @classmethod

@@ -1,7 +1,8 @@
+from os import stat
 from AccountModule import AccountManager
 from ReservationsModule import Res, ResManager
 from TimeUtilities import TimeRange
-from GarageModule import GarageManager
+from GarageModule import GarageManager, Day, DaysIntiliazed
 
 class ReservationAPI():
     '''
@@ -35,7 +36,12 @@ class ReservationAPI():
         Attempts to modify the reservation to the new day & times. Saves
         files. Returns true if successful
     
+    get_day_from_file(day_ID: str) -> Day
+        Load & initialize a day object from its corresponding file.
         
+    list_days_initialized() -> list
+        List the day files that have been initialized.
+    
     query_if_available(day, tRange):
         Check if a time range is available on a certain day.
     
@@ -171,7 +177,22 @@ class ReservationAPI():
             return True
         else:
             return False
+    
+    @staticmethod
+    def get_day_from_file(day_ID: str) -> Day:
+        '''
+        Load & initialize a day object from its corresponding file.
+        '''
+        return GarageManager.load_day(day_ID=day_ID)
+    
+    @staticmethod
+    def list_days_initialized() -> list:
+        '''
+        List the day files that have been initialized.
+        '''
+        return DaysIntiliazed.days
         
+    
     @staticmethod
     def query_if_available(day: int, tRange: TimeRange):
         '''
@@ -189,17 +210,5 @@ class ReservationAPI():
     
 if __name__ == '__main__':
     
-    GarageManager.reset_day(3)
-    
-    tRange1 = TimeRange(start=1, end=3)
-    ReservationAPI.create_res('1234', 'Smarthi', 3, tRange1 )
-    ReservationAPI.create_res('897', 'Smarthi', 3, tRange1 )
-    
-    tRange3 = TimeRange(start=3, end=5)
-    ReservationAPI.create_res('yote', 'Smarthi', 3, tRange3 )
-    
-    
-    tRange2 = TimeRange(start=1, end=4)
-    print(ReservationAPI.attempt_modify_res('897', new_d=3, new_tRange=tRange2))
-    
-    
+    print(ReservationAPI.list_days_initialized())
+    print(ReservationAPI.get_day_from_file('1'))

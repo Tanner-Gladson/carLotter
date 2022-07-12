@@ -56,7 +56,7 @@ class Day():
     
     Instance Attributes
     ----------
-    day_num : Int
+    day_ID : Int
         The current day
     
     n_lifts : Int
@@ -106,7 +106,7 @@ class Day():
     
     DaysIntiliazed.initialize()
     
-    def __init__(self, day_num, num_lifts, reservedSlots=None, res_locs=None, filename=None):
+    def __init__(self, day_ID, num_lifts, reservedSlots=None, res_locs=None, filename=None):
         '''
         Initialize values of new instance
         
@@ -122,10 +122,10 @@ class Day():
         res_locs : dict {ID str : int}, optional
         '''
         
-        self.day = day_num
+        self.day = day_ID
         
         if filename == None:
-            self.filename = str(day_num)
+            self.filename = str(day_ID)
         else:
             self.filename = filename
             
@@ -301,7 +301,7 @@ class GarageManager():
     default_num_lifts = 2
 
     @classmethod
-    def check_if_available(self, day_num, tRange: TimeRange, res_modifiying=None) -> bool:
+    def check_if_available(self, day_ID, tRange: TimeRange, res_modifiying=None) -> bool:
         '''
         TODO #1 Does not consider shifting reservations around
         Check if a reservation can be created for specified day, time range,
@@ -321,11 +321,11 @@ class GarageManager():
         bool
         
         '''
-        c_day = self.load_day(day_num)
+        c_day = self.load_day(day_ID)
         
         # If not modifying or original Res on different day, simply determine 
         # if there is a best lift for day_ID (current day)
-        if res_modifiying == None or res_modifiying.day != day_num:
+        if res_modifiying == None or res_modifiying.day != day_ID:
             best_lift = c_day.findBestLift(tRange)
         
         # If new time slot & old reservation (modifying) are on same day: 
@@ -381,7 +381,7 @@ class GarageManager():
     
     
     @classmethod
-    def load_day(self, day_num: int, filename=None) -> Day:
+    def load_day(self, day_ID: int, filename=None) -> Day:
         '''
         Loads day 'day_id' if possible. Else, creates new Day instance 
         (and corresponding files). 
@@ -399,11 +399,11 @@ class GarageManager():
         Day instance
         '''
         if filename == None:
-            filename = day_num
+            filename = day_ID
         
         # If day has not been initiated, create not (don't try to load)
-        if day_num not in DaysIntiliazed.days:
-            return self.create_day(day_num)
+        if day_ID not in DaysIntiliazed.days:
+            return self.create_day(day_ID)
         
         # If day has been initiated, load.
         else:
@@ -416,17 +416,17 @@ class GarageManager():
                 
                 # Find the number of lifts (2nd line, all chars before first space)
                 # Find res_locs by using handy-dandy eval function
-                day_num = int(raw[0].split(' ')[-1])
+                day_ID = int(raw[0].split(' ')[-1])
                 num_lifts = int(raw[1].split(' ')[0])
                 res_locs = eval(raw[2])
                 
             reservedSlots = np.load(np_file_name, allow_pickle=True)
             
-            return Day(day_num, num_lifts, reservedSlots, res_locs)
+            return Day(day_ID, num_lifts, reservedSlots, res_locs)
     
     
     @staticmethod
-    def create_day(day_num: int, n_lifts=default_num_lifts) -> Day:
+    def create_day(day_ID: int, n_lifts=default_num_lifts) -> Day:
         '''
         Constructs new Day instance with ID 'day'. Automatically saves to files
         
@@ -441,15 +441,15 @@ class GarageManager():
             
         Return: Day instance
         '''
-        return (Day(day_num, n_lifts))
+        return (Day(day_ID, n_lifts))
     
     
     @classmethod
-    def reset_day(self, day_num: int, n_lifts=default_num_lifts) -> None:
+    def reset_day(self, day_ID: int, n_lifts=default_num_lifts) -> None:
         '''
         Resets all the data from a day.
         '''
-        self.create_day(day_num, self.default_num_lifts)
+        self.create_day(day_ID, self.default_num_lifts)
         
 
 
