@@ -1,5 +1,4 @@
-from os import stat
-from AccountModule import AccountManager
+import os
 from ReservationsModule import Res, ResManager
 from TimeUtilities import TimeRange
 from GarageModule import GarageManager, Day, DaysIntiliazed
@@ -10,9 +9,12 @@ class ReservationAPI():
     
     Methods
     --------
-    create_res(ID: str, owner: str, day: int, rRange: TimeRange) -> Res
+    attempt_create_res(ID: str, owner: str, day: int, rRange: TimeRange) -> Res
         Create and save a new Res instance / file. Fill appropriate 
         timeslots in 'days'
+    
+    query_res_exists(ID: str) -> bool:
+        Query if the reservation exists.
     
     cancel_res(ID: str) -> None
         Remove the specified reservation from time slots & change active
@@ -47,7 +49,7 @@ class ReservationAPI():
     
     '''
     @staticmethod
-    def create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> (bool, str):
+    def attempt_create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> bool:
         '''
         Create and save a new Res instance / file. Fill appropriate 
         timeslots in 'days'. Add that reservation to appropriate account
@@ -78,9 +80,30 @@ class ReservationAPI():
         if GarageManager.check_if_available(day, tRange=tRange):
             c_res = ResManager.create_res(ID, owner, day, tRange, filename=filename)
             GarageManager.write_res(c_res)
-            return True, f'Successfully created reservation on day {day} from {str(tRange)}'
+            return True
         else:
-            return False, f'Cannot create a reservation on day {day} from {str(tRange)}'
+            return False
+    
+    @staticmethod
+    def query_if_res_exists(ID: str) -> bool:
+        '''
+        Query if the reservation file exists.
+        '''
+        if f'{ID}.txt' in os.listdir('./reservations'):
+            return True
+        else:
+            return False
+            
+    @staticmethod
+    def query_if_day_exists(day_ID: str) -> bool:
+        '''
+        Query if the reservation file exists.
+        '''
+        if f'{day_ID}.txt' in os.listdir('./days'):
+            return True
+        else:
+            return False
+        
     
     @staticmethod
     def cancel_res(ID: str) -> None:
@@ -210,5 +233,6 @@ class ReservationAPI():
     
 if __name__ == '__main__':
     
-    print(ReservationAPI.list_days_initialized())
-    print(ReservationAPI.get_day_from_file('1'))
+    #print(ReservationAPI.list_days_initialized())
+    #print(ReservationAPI.get_day_from_file('1'))
+    #print(ReservationAPI.query_if_day_exists('10'))
