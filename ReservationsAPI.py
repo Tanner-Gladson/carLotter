@@ -235,4 +235,5 @@ if __name__ == '__main__':
     
     #print(ReservationAPI.list_days_initialized())
     #print(ReservationAPI.get_day_from_file('1'))
-    #print(ReservationAPI.query_if_day_exists('10'))
+    #print(ReservationAPI.query_if_day_exists('10')
+    pass
