@@ -49,7 +49,7 @@ class ReservationAPI():
     
     '''
     @staticmethod
-    def attempt_create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> bool:
+    def try_create_res(ID: str, owner: str, day: int, tRange: TimeRange, filename=None) -> bool:
         '''
         Create and save a new Res instance / file. Fill appropriate 
         timeslots in 'days'. Add that reservation to appropriate account
@@ -85,7 +85,7 @@ class ReservationAPI():
             return False
     
     @staticmethod
-    def query_if_res_exists(ID: str) -> bool:
+    def res_exists(ID: str) -> bool:
         '''
         Query if the reservation file exists.
         '''
@@ -95,7 +95,7 @@ class ReservationAPI():
             return False
             
     @staticmethod
-    def query_if_day_exists(day_ID: str) -> bool:
+    def day_exists(day_ID: str) -> bool:
         '''
         Query if the reservation file exists.
         '''
@@ -146,7 +146,7 @@ class ReservationAPI():
         return ResManager.load_res(filename)
     
     @staticmethod
-    def query_modify_res(res_ID: str, new_d: int, new_tRange: TimeRange) -> bool:
+    def try_modify_res(res_ID: str, new_d: int, new_tRange: TimeRange) -> bool:
         '''
         Checks if a reservation can be moved to new time. Returns true/false
 
@@ -169,7 +169,7 @@ class ReservationAPI():
         return GarageManager.check_if_available(new_d, new_tRange, res_modifiying=c_res)
     
     @staticmethod
-    def attempt_modify_res(res_ID: str, new_d: int, new_tRange: TimeRange) -> bool:
+    def try_modify_res(res_ID: str, new_d: int, new_tRange: TimeRange) -> bool:
         '''
         Attempts to modify the reservation to the new day & times. Saves files.
         Returns true if successful
@@ -217,7 +217,7 @@ class ReservationAPI():
         
     
     @staticmethod
-    def query_if_available(day: int, tRange: TimeRange):
+    def try_if_available(day: int, tRange: TimeRange):
         '''
         Check if the requested time range is available on day. Return bool
         
