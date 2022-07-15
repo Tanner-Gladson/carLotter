@@ -140,6 +140,9 @@ class AccountManager():
     
     Methods
     ------ 
+    account_exists(username: ID) -> bool:
+        Check if a username has a corresponding file.
+    
     load_acct(filename: str) -> Acct:
         Loads and constructs an account instance from files
         
@@ -167,6 +170,16 @@ class AccountManager():
     
         
     '''
+    @staticmethod
+    def account_exists(username: str) -> bool:
+        '''
+        Check if a username has a corresponding file.
+        '''
+        if username in AcctsInitiliazed.accts:
+            return True
+        else:
+            return False
+    
     
     @staticmethod
     def load_acct_from_file(filename: str) -> Acct:
@@ -273,5 +286,6 @@ class AccountManager():
     
     
 if __name__ == '__main__':
-    print(AccountManager.list_accounts_initialized())
+    print(AcctsInitiliazed.accts)
+    print(AccountManager.account_exists("Smarthi"))
     pass
