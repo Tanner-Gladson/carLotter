@@ -106,7 +106,7 @@ class ReservationAPI():
         
     
     @staticmethod
-    def cancel_res(ID: str) -> None:
+    def try_cancel_res(ID: str) -> None:
         '''
         Remove the specified reservation from time slots & change active
         attribute in files.
