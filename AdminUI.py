@@ -2,13 +2,17 @@ from ReservationsAPI import ReservationsAPI
 from AccountModule import AccountManager
 
 
-class switchAccountCommands():
+class AccountCommands():
     
     '''
     A static class for switching between several account-related commands.
     
     Methods
     --------
+    switch_commands(self, user_command: List[str]) -> str:
+        Acts as a relay, directing the user's command list to the appropriate
+        command. Returns the resulting output string.
+        
     account_list() -> str:
         returns a string of accounts that have been initiated. Or a string
         detailing why the command failed.
@@ -25,13 +29,40 @@ class switchAccountCommands():
         Changes an account password, returning confirmation or failure.
     
     '''
+    @classmethod
+    def switch_commands(self, user_command: list[str]) -> str:
+        '''
+        Acts as a relay, directing the user's command to the appropriate
+        command. Returns the resulting output string.
+        
+        Parameters
+        ----------
+        user_command : list[str]
+            The users command, split by spaces
+        '''
+        if user_command[1] == 'list':
+            return self.account_list()
+        
+        elif user_command[1] == 'create':
+            return self.create_account(user_command[2], user_command[3])
+            
+        elif user_command[1] == 'view':
+            return self.view_account(user_command[2])
+            
+        elif user_command[1] == 'change' and user_command[2] == 'password':
+            return self.change_account_password\
+                (user_command[3], user_command[4], user_command[5])
+            
+        else: 
+            return f'Command not found. Type "help" for more info'
+    
     @staticmethod
     def account_list() -> str:
         '''
         returns a string of accounts that have been initiated. Or a string
         detailing why the command failed.
         '''
-        pass
+        return AccountManager.list_accounts_initialized()
     
     
     @staticmethod
@@ -72,12 +103,16 @@ class switchAccountCommands():
 
 
 
-class switchReservationCommands():
+class ReservationCommands():
     '''
     A static class for switching between reservation related commands
     
     Methods
     --------
+    switch_commands(self, user_command: List[str]) -> str:
+        Acts as a relay, directing the user's command list to the appropriate
+        command. Returns the resulting output string.
+        
     create_reservation(username: str, start_time: str, end_time: str) -> str:
         Creates a new reservation and returns confirmation, or returns
         description of failure.
@@ -95,6 +130,34 @@ class switchReservationCommands():
         Cancels a reservation. Returns confirmation of failure.
     
     '''
+    @classmethod
+    def switch_commands(self, user_command: list[str]) -> str:
+        '''
+        Acts as a relay, directing the user's command to the appropriate
+        command. Returns the resulting output string.
+        
+        Parameters
+        ----------
+        user_command : list[str]
+            The users command, split by spaces
+        '''
+        
+        if user_command[1] == 'create':
+            return self.create_reservation\
+                (user_command[2], user_command[3], user_command[4], user_command[5], user_command[6])
+        
+        elif user_command[1] == 'view':
+            return self.view_reservation(user_command[2])
+            
+        elif user_command[1] == 'cancel':
+            return self.cancel_reservation(user_command[2])
+            
+        elif user_command[1] == 'modify' and user_command[2] == 'time':
+            return self.modify_reservation_time\
+                (user_command[3], user_command[4], user_command[5], user_command[6])
+            
+        else: 
+            return f'Command not found. Type "help" for more info'
     
     @staticmethod
     def create_reservation(username: str, start_time: str, end_time: str) -> str:
@@ -134,12 +197,16 @@ class switchReservationCommands():
         pass
     
     
-class switchDayCommands():
+class DayCommands():
     '''
     A static class for switching between day-related user commands.
     
     Methods
     --------
+    switch_commands(self, user_command: List[str]) -> str:
+        Acts as a relay, directing the user's command list to the appropriate
+        command. Returns the resulting output string.
+        
     day_list() -> str
         Returns a string of all the days that have files
         
@@ -147,6 +214,17 @@ class switchDayCommands():
         Returns a formatted view of a Day's details, or a failure string
     
     '''
+    @classmethod
+    def switch_commands(self, user_command: list[str]) -> str:
+        '''
+        Acts as a relay, directing the user's command to the appropriate
+        command. Returns the resulting output string.
+        
+        Parameters
+        ----------
+        user_command : list[str]
+            The users command, split by spaces
+        '''
     
     @staticmethod
     def day_list() -> str:
@@ -164,14 +242,110 @@ class switchDayCommands():
         '''
         pass
 
+
 class AdminUI():
     '''
     The primary class for initiating an admin interface.
     
     Methods
     -------
-    initiate_administrator_UI() -> None
+    initiate_administrator_UI(self) -> None
         A function that repeatedly prompts user for commands.
-    '''
     
-    pass
+    switch_user_command(self, split_command_str) -> str:
+        Relays user command to proper functions, and returns the response
+        as a string
+    
+    get_ui_help() -> str:
+        Returns a string of commands executable by user.
+    
+    '''
+    @classmethod
+    def initiate_administrator_UI(self) -> None:
+        '''
+        Repeatedly prompts user for command until quit. Relays user
+        commands to appropriate categories for handling.
+        '''
+        
+        ui_active = True
+        print('=======================================================================')
+        print('          Welcome to Car Lotter! Type "help" to see commands.')
+        print('=======================================================================')
+        print()
+        
+        while ui_active:
+            print()
+            print()
+            user_in = input(f'>>> Enter command: ')
+            print('-----------------------------------------------------------------------')
+            print()
+            command = user_in.split(' ')
+            
+            if command[0] == 'quit':
+                break
+            else:
+                print(self.switch_user_command(command))
+            
+    @classmethod
+    def switch_user_command(self, command) -> str:
+        '''
+        Relays user command to proper functions, and returns the response
+        as a string
+        
+        Parameters
+        -----------
+        command : List[str]
+            A list of the user's input strings, split by spaces
+            
+        '''
+        
+        if command[0] == 'account':
+            pass
+            return AccountCommands.switch_commands(command)
+        
+        elif command[0] == 'reservation':
+            pass
+            return ReservationCommands.switch_commands(command)
+        
+        elif command[0] == 'day':
+            pass
+            return DayCommands.switch_commands(command)
+        
+        elif command[0] == 'help':
+            return self.get_ui_help()
+        
+        else:
+            return 'Command not found. Type "help" for more info'
+        
+    
+    
+    @classmethod
+    def get_ui_help(self) -> str:
+        '''
+        Returns a string of commands executable by user.
+        '''
+        return f'help\n    Print a list of commands.\n\n'\
+            'account list\n' \
+            '     List all the account usernames.\n\n' \
+            'account create [username] [password]\n' \
+            '    Create a new account.\n\n'  \
+            'account view [username] [password]\n' \
+            '    View the information of an account.\n\n'     \
+            'account change password [username] [old password] [new password]\n' \
+            '    Create a new account (will also overwrite).\n\n'    \
+            'reservation create [username] [ID] [day] [start time] [end time]\n'     \
+            '    Attempt to create a reservation at the specified time.\n\n'    \
+            'reservation view [ID]\n'     \
+            '    View a reservation.\n\n'    \
+            'reservation modify time [ID] [new day] [new start time] [new end time]\n'     \
+            '    Attempt to modify a reservation.\n\n'    \
+            'reservation cancel [ID]\n'     \
+            '    Cancel a reservation.\n\n'    \
+            'day list\n'     \
+            '    List all of the initiated days.\n\n'    \
+            'day view [day]\n'     \
+            '    View the timeslot data from a day'
+
+
+if __name__ == '__main__':
+    AdminUI.initiate_administrator_UI()
