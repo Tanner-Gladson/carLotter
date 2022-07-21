@@ -40,21 +40,46 @@ class AccountCommands():
         user_command : list[str]
             The users command, split by spaces
         '''
-        if user_command[1] == 'list':
-            return self.account_list()
+        if len(user_command) < 2:
+            out_string = 'Command not found. Type "help" for more info'
+        
+        elif user_command[1] == 'list':
+            if len(user_command) == 2:
+                out_string = self.account_list()
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "account list"'
         
         elif user_command[1] == 'create':
-            return self.create_account(user_command[2], user_command[3])
+            if len(user_command) == 4:
+                out_string = self.create_account(user_command[2], user_command[3])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "account create [username] [password]"'
             
         elif user_command[1] == 'view':
-            return self.view_account(user_command[2])
+            if len(user_command) == 3:
+                out_string = self.view_account(user_command[2])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "Try: "account view [username] [password]"'
             
         elif user_command[1] == 'change' and user_command[2] == 'password':
-            return self.change_account_password\
-                (user_command[3], user_command[4], user_command[5])
+            if len(user_command) == 6:
+                out_string = self.change_account_password\
+                    (user_command[3], user_command[4], user_command[5])
+                    
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "account change password [username] [old password] [new password]"'
             
         else: 
-            return f'Command not found. Type "help" for more info'
+            out_string = f'Command not found. Type "help" for more info'
+            
+        return out_string
     
     @staticmethod
     def account_list() -> str:
@@ -141,23 +166,29 @@ class ReservationCommands():
         user_command : list[str]
             The users command, split by spaces
         '''
+        TODO Add argument checking to these commands
         
-        if user_command[1] == 'create':
-            return self.create_reservation\
+        if len(user_command) < 2:
+            out_string = 'Command not found. Type "help" for more info'
+        
+        elif user_command[1] == 'create':
+            out_string = self.create_reservation\
                 (user_command[2], user_command[3], user_command[4], user_command[5], user_command[6])
         
         elif user_command[1] == 'view':
-            return self.view_reservation(user_command[2])
+            out_string = self.view_reservation(user_command[2])
             
         elif user_command[1] == 'cancel':
-            return self.cancel_reservation(user_command[2])
+            out_string = self.cancel_reservation(user_command[2])
             
         elif user_command[1] == 'modify' and user_command[2] == 'time':
-            return self.modify_reservation_time\
+            out_string = self.modify_reservation_time\
                 (user_command[3], user_command[4], user_command[5], user_command[6])
             
         else: 
-            return f'Command not found. Type "help" for more info'
+            out_string = f'Command not found. Type "help" for more info'
+            
+        return out_string
     
     @staticmethod
     def create_reservation(username: str, start_time: str, end_time: str) -> str:
@@ -225,6 +256,7 @@ class DayCommands():
         user_command : list[str]
             The users command, split by spaces
         '''
+        
     
     @staticmethod
     def day_list() -> str:
@@ -299,7 +331,10 @@ class AdminUI():
             
         '''
         
-        if command[0] == 'account':
+        if command[0] == 'help':
+            return self.get_ui_help()
+        
+        elif command[0] == 'account':
             pass
             return AccountCommands.switch_commands(command)
         
@@ -310,9 +345,6 @@ class AdminUI():
         elif command[0] == 'day':
             pass
             return DayCommands.switch_commands(command)
-        
-        elif command[0] == 'help':
-            return self.get_ui_help()
         
         else:
             return 'Command not found. Type "help" for more info'
