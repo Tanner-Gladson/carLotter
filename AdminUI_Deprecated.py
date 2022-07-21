@@ -5,7 +5,7 @@ Created on Fri Jun 24 17:23:21 2022
 @author: tanne
 """
 from TimeUtilities import TimeRange, TimeTools
-from ReservationsAPI import ReservationAPI
+from ReservationsAPI import ReservationsAPI
 from GarageModule import DaysIntiliazed, GarageManager, Day
 from AccountModule import AccountManager, AcctsInitiliazed
 

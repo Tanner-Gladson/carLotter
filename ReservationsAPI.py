@@ -3,7 +3,7 @@ from ReservationsModule import Res, ResManager
 from TimeUtilities import TimeRange
 from GarageModule import GarageManager, Day, DaysIntiliazed
 
-class ReservationAPI():
+class ReservationsAPI():
     '''
     Static class for creating and manipulating reservations.
     
