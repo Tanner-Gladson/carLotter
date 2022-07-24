@@ -287,7 +287,7 @@ class ReservationCommands():
             
         if success:
             return 'Successfully created the reservation! Details below.\n\n'\
-                f'{ReservationsAPI.load_res_from_file(res_ID)}\n'\
+                f'{ReservationsAPI.get_res_from_file(res_ID)}\n'\
                 f'The availability on day {day} is now:\n\n'\
                 f'{ReservationsAPI.get_day_from_file(day).timeslots_to_string()}'
         else:
@@ -303,7 +303,7 @@ class ReservationCommands():
         string describing failure.
         '''
         if ReservationsAPI.res_exists(ID):
-            return str(ReservationsAPI.load_res_from_file(ID))
+            return str(ReservationsAPI.get_res_from_file(ID))
         else:
             return f'Reservation with ID "{ID}" could not be found'
     

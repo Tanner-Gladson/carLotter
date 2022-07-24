@@ -5,57 +5,9 @@ Created on Fri Jun 24 17:27:19 2022
 @author: tanne
 """
 
-import json
 import os
 import pickle
-
-from numpy import nonzero
 from ReservationsModule import Res
-
-class AcctsInitiliazed():
-    '''
-    A static class for tracking what accounts have been initiliazed and
-    saved. Accounts for async, manual deletion/modification of files.
-    
-    Attributes
-    ----------
-    accts : list [str]
-        A list of the account usernames which have been initialized
-    
-    Methods
-    ------ 
-    @class
-    initialize() -> None:
-        Initializes self.accts. Implemented to safeguard against asyncronous
-        (manual) modification of files.
-        
-    @class
-    update() -> None:
-        Update the self.accts attributes & corresponding file
-    '''
-    
-    accts = []
-    
-    @classmethod
-    def initialize(self) -> None:
-        '''
-        Initializes self.accts. Implemented to safeguard against asyncronous
-        (manual) modification of files.
-        '''
-        
-        all_files = os.listdir('./accounts')
-        self.accts = \
-            [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
-        json.dump(self.accts, open('./accounts/initialized_accounts.json', 'w'))
-    
-    @classmethod
-    def update(self, c_filename) -> None:
-        
-        filename = f'{c_filename}.txt'
-        
-        if c_filename not in self.accts:
-            self.accts.append(c_filename)
-            json.dump(self.accts, open('./accounts/initialized_accounts.json', 'w'))
 
 
 class Acct():
@@ -88,7 +40,6 @@ class Acct():
         Overload string operator to print readable account summary.
         
     '''
-    AcctsInitiliazed.initialize()
     
     
     def __init__(self, username: str, password: str, filename=None):
@@ -118,7 +69,10 @@ class Acct():
         '''
         Convert self to readable string
         '''
-        return f'**Account**\nUsername: {self.username}\nPassword: {self.password}\nFilename: {self.filename}\n\nReservations: {self.reservations}\n\n'
+        return f'**Account**\nUsername: {self.username}\n'\
+            'Password: {self.password}\n'\
+            'Filename: {self.filename}\n\n'\
+            'Reservations: {self.reservations}\n\n'
         
     
     def save(self) -> None:
@@ -131,8 +85,6 @@ class Acct():
         with open(f'accounts/{self.filename}.txt', 'w+') as file:
             file.write(self.__str__())
         
-        AcctsInitiliazed.update(c_filename=self.filename)
-
 
 class AccountManager():
     '''
@@ -170,12 +122,12 @@ class AccountManager():
     
         
     '''
-    @staticmethod
-    def account_exists(username: str) -> bool:
+    @classmethod
+    def account_exists(self, username: str) -> bool:
         '''
         Check if a username has a corresponding file.
         '''
-        if username in AcctsInitiliazed.accts:
+        if username in self.list_accounts_initialized():
             return True
         else:
             return False
@@ -263,14 +215,15 @@ class AccountManager():
         
         os.remove(f'./accounts/{filename}.txt')
         os.remove(f'./accounts/{filename}.pickle')
-        AcctsInitiliazed.initialize()
     
     @staticmethod
     def list_accounts_initialized() -> list:
         '''
         Return a list of the accounts that have been initialized
         '''
-        return AcctsInitiliazed.accts[:]
+        all_files = os.listdir('./accounts')
+        return \
+            [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
     
     @classmethod
     def unlist_reservations(self, filename: str) -> None:
@@ -286,6 +239,5 @@ class AccountManager():
     
     
 if __name__ == '__main__':
-    print(AcctsInitiliazed.accts)
     print(AccountManager.account_exists("Smarthi"))
     pass

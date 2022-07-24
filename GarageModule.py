@@ -9,42 +9,7 @@ from ReservationsModule import Res
 from TimeUtilities import TimeRange
 import numpy as np
 import sys
-import json
 import os
-
-class DaysIntiliazed():
-    '''
-    A static class for tracking what days have been previously initiliazed and
-    saved. Accounts for async, manual deletion/modification of files.
-    '''
-    days = []
-    
-    @classmethod
-    def initialize(self):
-        '''
-        Construct the days attribute by detecting all filenames
-        in directory ../days.
-        '''
-        # Create list of all file prefixes for files that end in '.txt'
-        all_files = os.listdir(f'./days')
-        txt_files = \
-            [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
-        
-        self.days = txt_files
-        with open('days/initiated_days.json', 'w+') as file:
-            json.dump(self.days, file)
-    
-    @classmethod
-    def update_days(self, filename: str):
-        '''
-        Update and save list of days that already have corresponding file
-        '''
-        # If filename is not in days, update & save days to json
-        filename = str(filename)
-        if filename not in self.days:
-            self.days.append(filename)
-            with open('days/initiated_days.json', 'w+') as file:
-                json.dump(self.days, file)
 
 
 class Day():
@@ -103,8 +68,6 @@ class Day():
         
     
     '''
-    
-    DaysIntiliazed.initialize()
     
     def __init__(self, day_ID, num_lifts, reservedSlots=None, res_locs=None, filename=None):
         '''
@@ -260,7 +223,6 @@ class Day():
             
         np.save(f'days/{self.filename}', self.reservedSlots)
         
-        DaysIntiliazed.update_days(self.day)
     
 
 class GarageManager():

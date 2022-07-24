@@ -1,7 +1,7 @@
 import os
 from ReservationsModule import Res, ResManager
 from TimeUtilities import TimeRange
-from GarageModule import GarageManager, Day, DaysIntiliazed
+from GarageModule import GarageManager, Day
 
 class ReservationsAPI():
     '''
@@ -134,7 +134,7 @@ class ReservationsAPI():
         return GarageManager.findLift(c_res)
     
     @staticmethod
-    def load_res_from_file(filename: str) -> Res:
+    def get_res_from_file(filename: str) -> Res:
         '''
         Loads Res object from file & returns. 
         
@@ -213,7 +213,12 @@ class ReservationsAPI():
         '''
         List the day files that have been initialized.
         '''
-        return DaysIntiliazed.days
+        # Create list of all file prefixes for files that end in '.txt'
+        all_files = os.listdir(f'./days')
+        txt_files = \
+            [filename[:-4] for filename in all_files if filename[-4:] == '.txt']
+        
+        return txt_files
         
     
     @staticmethod
