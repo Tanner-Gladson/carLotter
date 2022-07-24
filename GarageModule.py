@@ -241,6 +241,12 @@ class Day():
         s4 = np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
         
         return f'{s1}\n{s2}\n{s3}\n\n{s4}'
+        
+    def timeslots_to_string(self):
+        '''
+        Return a string of just the day's timeslots. Useful in UI applications
+        '''
+        return np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
     
     
     def save(self) -> None:
@@ -363,6 +369,7 @@ class GarageManager():
         
         c_day = self.load_day(c_res.day)
         c_day.write_res(c_res)
+        c_day.save()
     
     
     @classmethod
@@ -402,7 +409,8 @@ class GarageManager():
             filename = day_ID
         
         # If day has not been initiated, create not (don't try to load)
-        if day_ID not in DaysIntiliazed.days:
+        if f'{day_ID}.txt' not in os.listdir('./days'):
+            print('I created a new day instance for this')
             return self.create_day(day_ID)
         
         # If day has been initiated, load.
@@ -455,18 +463,4 @@ class GarageManager():
 
 
 if __name__ == '__main__':
-    
-    GarageManager.reset_day(1)
-    
-    res1 = Res('1', 'smarthi', 1, start_time=1, end_time=3)
-    GarageManager.write_res(res1)
-    
-    res2 = Res('2', 'smarthi', 1, start_time=1, end_time=3)
-    GarageManager.write_res(res2)
-    
-    res3_tRange = TimeRange(start=1, end=2)
-    can_fit = GarageManager.check_if_available(1, res3_tRange, res2)
-    
-    print('We can fit res3:', can_fit)
-    
-    print(GarageManager.load_day(1))
+    pass

@@ -344,7 +344,7 @@ class AdminUI():
         '''
         #TODO load_acct_from_file no longer takes password
         c_account = AccountManager.load_acct_from_file(username, old_pass)
-        success = AccountManager.change_password(c_account, old_pass, new_pass)
+        success = AccountManager.try_change_password(c_account, old_pass, new_pass)
         return success 
     
     @classmethod

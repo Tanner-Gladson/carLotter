@@ -1,5 +1,6 @@
 from ReservationsAPI import ReservationsAPI
 from AccountModule import AccountManager
+from TimeUtilities import TimeRange
 
 
 class AccountCommands():
@@ -95,7 +96,11 @@ class AccountCommands():
         '''
         Return a formatted string of an account's details or a failure string.
         '''
-        pass
+        if AccountManager.account_exists(username):
+            return str(AccountManager.load_acct_from_file(username))
+        else:
+            return f'Account with username "{username}" could not be found\n\n'\
+                'To list the created accounts, use "account list"'
     
     
     @staticmethod
@@ -104,7 +109,19 @@ class AccountCommands():
         Create an account. Returns a string giving the account details. 
         Or returns a string detailing why the command failed.
         '''
-        pass
+        if password == '':
+            return f'Error: account password must not be empty'
+        elif not username.isalnum():
+            return f'Error: username should be an alpha-numeric string'
+        elif not password.isalnum():
+            return f'Error: password should be an alpha-numeric string'
+        elif username == '':
+            return f'Error: account username must not be empty'
+        elif AccountManager.account_exists(username):
+            return f'Error: that account name is already taken'
+        else:
+            # Create account, file, and return a formatted string as confirm.
+            return str(AccountManager.create_acct(username, password))
     
     
     @staticmethod
@@ -124,7 +141,19 @@ class AccountCommands():
         new_pass : str
             The desired new password of the account
         '''
-        pass
+        # Input validation
+        if not new_pass.isalnum():
+                return f'Error: new password should be an alpha-numeric string'
+        
+        if AccountManager.account_exists(username):
+            c_acct = AccountManager.load_acct_from_file(username)
+            if AccountManager.try_change_password(c_acct, old_pass, new_pass):
+                return f'Password successfully changed!'
+            else:
+                return f'Error: incorrect previous password'
+        else:
+            return f'Account with username "{username}" could not be found\n\n'\
+                'To list the created accounts, use "account list"'
 
 
 
@@ -166,24 +195,43 @@ class ReservationCommands():
         user_command : list[str]
             The users command, split by spaces
         '''
-        TODO Add argument checking to these commands
         
         if len(user_command) < 2:
             out_string = 'Command not found. Type "help" for more info'
         
         elif user_command[1] == 'create':
-            out_string = self.create_reservation\
+            if len(user_command) == 7:
+                out_string = self.create_reservation\
                 (user_command[2], user_command[3], user_command[4], user_command[5], user_command[6])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "reservation create [username] [ID] [day] [start time] [end time]"'
         
         elif user_command[1] == 'view':
-            out_string = self.view_reservation(user_command[2])
+            if len(user_command) == 3:
+                out_string = self.view_reservation(user_command[2])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "reservation view [ID]"'
             
         elif user_command[1] == 'cancel':
-            out_string = self.cancel_reservation(user_command[2])
+            if len(user_command) == 3:
+                out_string = self.cancel_reservation(user_command[2])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "reservation cancel [ID]"'
             
         elif user_command[1] == 'modify' and user_command[2] == 'time':
-            out_string = self.modify_reservation_time\
+            if len(user_command) == 7:
+                out_string = self.modify_reservation_time\
                 (user_command[3], user_command[4], user_command[5], user_command[6])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "reservation modify time [ID] [new day] [new start time] [new end time]"'
             
         else: 
             out_string = f'Command not found. Type "help" for more info'
@@ -191,12 +239,60 @@ class ReservationCommands():
         return out_string
     
     @staticmethod
-    def create_reservation(username: str, start_time: str, end_time: str) -> str:
+    def create_reservation\
+            (username: str, res_ID: str, day: str, start_time: str, end_time: str) -> str:
         '''
         Creates a new reservation and returns confirmation, or returns
         description of failure.
+        
         '''
-        pass
+        
+        # Perform much input validation
+        if not AccountManager.account_exists(username):
+            return f'Error: account with username "{username}" could not be found.\n\n'\
+                'Try using "account list"'
+        
+        if ReservationsAPI.res_exists(res_ID):
+            return f'Error: reservation with ID "{res_ID}" already exists'
+        
+        if not res_ID.isalnum():
+            return f'Error: reservation ID should be an alpha-numeric string'
+        
+        try:
+            day = int(day)
+            if day < 0 or day > 365:
+                return 'You can only make reservations from days 0-365. Please try again.'
+        except:
+            return f'Error: day number "{day}" could not be converted to an integer.'
+        
+        # Ensure requested time range is valid
+        try:
+            s = int(start_time)
+            e = int(end_time)
+            
+            if s > e:
+                return f'Error: start time must be less than the end time'
+            elif (s not in range(0, 24)) or (e not in range(1, 25)):
+                return f'Error: The start and end times must be from 0-23 or 1-24, respectively.'
+            
+            tRange = TimeRange(string = None, start=s, end=e)
+        except:
+            return f'Error: a TimeRange could not be created from {start_time} to {end_time}.\n\n'\
+                'The start and end times must be integers from 0-23 or 1-24, respectively.'
+        
+        if ReservationsAPI.try_create_res(res_ID, username, day, tRange):
+            success = True
+        else:
+            success = False
+            
+        if success:
+            return 'Successfully created the reservation! Details below.\n\n'\
+                f'{ReservationsAPI.load_res_from_file(res_ID)}\n'\
+                f'The availability on day {day} is now:\n\n'\
+                f'{ReservationsAPI.get_day_from_file(day).timeslots_to_string()}'
+        else:
+            return 'Could not create reservation. Time slots likely unavailable.'
+                
     
     
     
@@ -206,7 +302,10 @@ class ReservationCommands():
         Returns a formatted string with reservation details, or returns a
         string describing failure.
         '''
-        pass
+        if ReservationsAPI.res_exists(ID):
+            return str(ReservationsAPI.load_res_from_file(ID))
+        else:
+            return f'Reservation with ID "{ID}" could not be found'
     
     
     @staticmethod
@@ -225,7 +324,10 @@ class ReservationCommands():
         '''
         Cancels a reservation. Returns confirmation of failure.
         '''
-        pass
+        if ReservationsAPI.res_exists(ID):
+            return f'Reservation successfully cancelled!'
+        else:
+            return f'Reservation with ID "{ID}" could not be found'
     
     
 class DayCommands():
@@ -256,23 +358,47 @@ class DayCommands():
         user_command : list[str]
             The users command, split by spaces
         '''
+        if len(user_command) < 2:
+            out_string = 'Command not found. Type "help" for more info'
         
-    
+        elif user_command[1] == 'list':
+            if len(user_command) == 2:
+                out_string = self.day_list()
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "day list"'
+        
+        elif user_command[1] == 'view':
+            if len(user_command) == 3:
+                out_string = self.view_day(user_command[2])
+                
+            else:
+                out_string = 'Wrong number of arguments for this command.\n\n' \
+                    'Try: "day view [day]"'
+                    
+        else: 
+            out_string = f'Command not found. Type "help" for more info'
+            
+        return out_string            
+        
     @staticmethod
     def day_list() -> str:
         '''
         Returns a string of all the days that have files
         '''
-        pass
-    
-    
+        return ReservationsAPI.list_days_initialized()
     
     @staticmethod
     def view_day(day_ID: str) -> str:
         '''
         Returns a formatted view of a Day's details, or a failure string
         '''
-        pass
+        if ReservationsAPI.day_exists(day_ID):
+            return str(ReservationsAPI.get_day_from_file(day_ID))
+        else:
+            return f'Day with ID "{day_ID}" could not be found.\n\n'\
+                'To see days initialized, use "day list"'
 
 
 class AdminUI():
@@ -361,7 +487,7 @@ class AdminUI():
             '     List all the account usernames.\n\n' \
             'account create [username] [password]\n' \
             '    Create a new account.\n\n'  \
-            'account view [username] [password]\n' \
+            'account view [username]\n' \
             '    View the information of an account.\n\n'     \
             'account change password [username] [old password] [new password]\n' \
             '    Create a new account (will also overwrite).\n\n'    \

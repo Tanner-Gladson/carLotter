@@ -232,7 +232,7 @@ class AccountManager():
         
         
     @staticmethod
-    def change_password\
+    def try_change_password\
         (c_account: Acct, old_password: str, new_password: str) -> bool:
         '''
         Change the account's password. Returns True if successful

@@ -106,7 +106,7 @@ class ReservationsAPI():
         
     
     @staticmethod
-    def try_cancel_res(ID: str) -> None:
+    def cancel_res(ID: str) -> None:
         '''
         Remove the specified reservation from time slots & change active
         attribute in files.
@@ -134,7 +134,7 @@ class ReservationsAPI():
         return GarageManager.findLift(c_res)
     
     @staticmethod
-    def get_res(filename: str) -> Res:
+    def load_res_from_file(filename: str) -> Res:
         '''
         Loads Res object from file & returns. 
         
@@ -235,5 +235,6 @@ if __name__ == '__main__':
     
     #print(ReservationAPI.list_days_initialized())
     #print(ReservationAPI.get_day_from_file('1'))
-    #print(ReservationAPI.query_if_day_exists('10')
+    #print(ReservationAPI.query_if_day_exists('10')s
+    #ReservationsAPI.try_create_res('myres', 'Smarthi', 1, TimeRange(start=0, end=24))
     pass

@@ -1,6 +1,0 @@
-Day 3
-2 Lifts
-{}
-
-[[None '897' '897' '897' None None None None None None None None None None None None None None None None None None None None]
- [None None None None None None None None None None None None None None None None None None None None None None None None]]

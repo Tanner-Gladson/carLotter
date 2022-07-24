@@ -1,6 +1,6 @@
 **Account**
 Username: Smarthi
-Password: pass
+Password: 1
 Filename: Smarthi
 
 Reservations: []
