@@ -209,6 +209,7 @@ class Day():
         '''
         Return a string of just the day's timeslots. Useful in UI applications
         '''
+        # TODO #6
         return np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
     
     
@@ -372,7 +373,6 @@ class GarageManager():
         
         # If day has not been initiated, create not (don't try to load)
         if f'{day_ID}.txt' not in os.listdir('./days'):
-            print('I created a new day instance for this')
             return self.create_day(day_ID)
         
         # If day has been initiated, load.

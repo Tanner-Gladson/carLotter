@@ -3,5 +3,4 @@ Username: Smarthi
 Password: 1
 Filename: Smarthi
 
-Reservations: []
-
+Reservations: ['re']

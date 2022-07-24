@@ -2,5 +2,5 @@ Day 1
 2 Lifts
 {}
 
-[['1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234' '1234']
+[[None None None None 're' 're' 're' 're' None None None None None None None None None None None None None None None None]
  [None None None None None None None None None None None None None None None None None None None None None None None None]]

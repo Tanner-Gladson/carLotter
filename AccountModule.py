@@ -70,9 +70,9 @@ class Acct():
         Convert self to readable string
         '''
         return f'**Account**\nUsername: {self.username}\n'\
-            'Password: {self.password}\n'\
-            'Filename: {self.filename}\n\n'\
-            'Reservations: {self.reservations}\n\n'
+            f'Password: {self.password}\n'\
+            f'Filename: {self.filename}\n\n'\
+            f'Reservations: {self.reservations}'
         
     
     def save(self) -> None:

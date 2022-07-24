@@ -1,5 +1,0 @@
-ID:     1234
-Owner:  Smarthi
-Day:    1
-Times:  (0.0, 24.0)
-Active: True
