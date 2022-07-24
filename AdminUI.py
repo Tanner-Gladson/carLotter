@@ -431,7 +431,7 @@ class DayCommands():
         Returns a formatted view of a Day's details, or a failure string
         '''
         if ReservationsAPI.day_exists(day_ID):
-            return str(ReservationsAPI.get_day_from_file(day_ID))
+            return ReservationsAPI.get_day_from_file(day_ID).timeslots_to_string()
         else:
             return f'Day with ID "{day_ID}" could not be found.\n\n'\
                 'To see days initialized, use "day list"'
