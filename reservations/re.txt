@@ -1,5 +1,0 @@
-ID:     re
-Owner:  smarthi
-Day:    1
-Times:  (4.0, 8.0)
-Active: True

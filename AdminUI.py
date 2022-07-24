@@ -255,6 +255,10 @@ class ReservationCommands():
         if ReservationsAPI.res_exists(res_ID):
             return f'Error: reservation with ID "{res_ID}" already exists'
         
+        if len(res_ID) != 2:
+            return f'Error: the reservation ID must be 2 characters. I am working\n'\
+                'to remove this restriction.'
+        
         if not res_ID.isalnum():
             return f'Error: reservation ID should be an alpha-numeric string'
         

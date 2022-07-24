@@ -201,16 +201,30 @@ class Day():
         s1 = f'Day {self.day}'
         s2 = f'{self.n_lifts} Lifts'
         s3 = str(self.res_locs)
-        s4 = np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
+        s4 = self.timeslots_to_string()
         
         return f'{s1}\n{s2}\n{s3}\n\n{s4}'
+    
         
     def timeslots_to_string(self):
         '''
         Return a string of just the day's timeslots. Useful in UI applications
         '''
         # TODO #6
-        return np.array2string(self.reservedSlots, max_line_width=sys.maxsize)
+        out_s = 'Start hour: 00   01   02   03   04   05   06   07   08   09   10   11   12   '\
+            '13   14   15   16   17   18   19   20   21   22   23\n'\
+            '----------------------------------------------------------------------------'\
+            '-------------------------------------------------------\n'\
+        
+        for i in range(0, self.n_lifts):
+            
+            out_s += (f'Lift #{i} | '\
+            + np.array2string(self.reservedSlots[i], max_line_width=sys.maxsize)
+            + '\n')
+        
+        
+        
+        return out_s
     
     
     def save(self) -> None:
@@ -425,4 +439,4 @@ class GarageManager():
 
 
 if __name__ == '__main__':
-    pass
+    print(GarageManager.load_day(1).timeslots_to_string())
