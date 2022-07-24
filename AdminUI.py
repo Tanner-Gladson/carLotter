@@ -156,7 +156,6 @@ class AccountCommands():
                 'To list the created accounts, use "account list"'
 
 
-
 class ReservationCommands():
     '''
     A static class for switching between reservation related commands
@@ -238,6 +237,7 @@ class ReservationCommands():
             
         return out_string
     
+    
     @staticmethod
     def create_reservation\
             (username: str, res_ID: str, day: str, start_time: str, end_time: str) -> str:
@@ -247,7 +247,7 @@ class ReservationCommands():
         
         '''
         
-        # Perform much input validation
+        # Perform input validation
         if not AccountManager.account_exists(username):
             return f'Error: account with username "{username}" could not be found.\n\n'\
                 'Try using "account list"'
@@ -280,20 +280,20 @@ class ReservationCommands():
             return f'Error: a TimeRange could not be created from {start_time} to {end_time}.\n\n'\
                 'The start and end times must be integers from 0-23 or 1-24, respectively.'
         
+        # Attempt to create the reservation
         if ReservationsAPI.try_create_res(res_ID, username, day, tRange):
-            success = True
-        else:
-            success = False
             
-        if success:
+            c_acct = AccountManager.load_acct_from_file(username)
+            c_res = ReservationsAPI.get_res_from_file(res_ID)
+            AccountManager.add_reservation_to_acct(c_acct, c_res)
+            
             return 'Successfully created the reservation! Details below.\n\n'\
                 f'{ReservationsAPI.get_res_from_file(res_ID)}\n'\
                 f'The availability on day {day} is now:\n\n'\
                 f'{ReservationsAPI.get_day_from_file(day).timeslots_to_string()}'
         else:
             return 'Could not create reservation. Time slots likely unavailable.'
-                
-    
+            
     
     
     @staticmethod
@@ -310,13 +310,44 @@ class ReservationCommands():
     
     @staticmethod
     def modify_reservation_time\
-        (ID: str, new_day: str, new_start_time: str, new_end_time: str) -> str:
+        (res_ID: str, new_day: str, new_start_time: str, new_end_time: str) -> str:
         '''
         Modifies the time of a reservation & returns confirmation. Or, returns
         description of failure.
         '''
-        pass
-    
+        if not ReservationsAPI.res_exists(res_ID):
+            return f'Error: reservation with ID "{res_ID}" does not exist.\n\n'\
+        
+        try:
+            new_day = int(new_day)
+            if new_day < 0 or new_day > 365:
+                return 'You can only make reservations from days 0-365. Please try again.'
+        except:
+            return f'Error: day number "{new_day}" could not be converted to an integer.'
+        
+        # Ensure requested time range is valid
+        try:
+            s = int(new_start_time)
+            e = int(new_end_time)
+            
+            if s > e:
+                return f'Error: start time must be less than the end time'
+            elif (s not in range(0, 24)) or (e not in range(1, 25)):
+                return f'Error: The start and end times must be from 0-23 or 1-24, respectively.'
+            
+            new_tRange = TimeRange(string = None, start=s, end=e)
+        except:
+            return f'Error: a TimeRange could not be created from {new_start_time} to {new_end_time}.\n\n'\
+                'The start and end times must be integers from 0-23 or 1-24, respectively.'
+        
+        if ReservationsAPI.try_modify_res(res_ID, new_day, new_tRange):
+            return 'Successfully modified the reservation! Details below.\n\n'\
+                f'{ReservationsAPI.get_res_from_file(res_ID)}\n'\
+                f'The availability on day {new_day} is now:\n\n'\
+                f'{ReservationsAPI.get_day_from_file(new_day).timeslots_to_string()}'
+        else:
+            return 'The reservation could not be modified to this time. Please\n'\
+                'check if the requested time range is available using "day view [day].'
     
     
     @staticmethod
@@ -325,6 +356,7 @@ class ReservationCommands():
         Cancels a reservation. Returns confirmation of failure.
         '''
         if ReservationsAPI.res_exists(ID):
+            ReservationsAPI.cancel_res(ID)
             return f'Reservation successfully cancelled!'
         else:
             return f'Reservation with ID "{ID}" could not be found'
@@ -443,6 +475,7 @@ class AdminUI():
                 break
             else:
                 print(self.switch_user_command(command))
+                print()
             
     @classmethod
     def switch_user_command(self, command) -> str:
@@ -474,8 +507,6 @@ class AdminUI():
         
         else:
             return 'Command not found. Type "help" for more info'
-        
-    
     
     @classmethod
     def get_ui_help(self) -> str:
