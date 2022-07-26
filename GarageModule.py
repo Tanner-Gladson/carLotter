@@ -4,7 +4,7 @@ Created on Fri Jun 24 17:27:21 2022
 
 @author: tanne
 """
-
+import ast
 from ReservationsModule import Res
 from TimeUtilities import TimeRange
 import numpy as np
@@ -402,7 +402,7 @@ class GarageManager():
                 # Find res_locs by using handy-dandy eval function
                 day_ID = int(raw[0].split(' ')[-1])
                 num_lifts = int(raw[1].split(' ')[0])
-                res_locs = eval(raw[2])
+                res_locs = ast.literal_eval(raw[2])
                 
             reservedSlots = np.load(np_file_name, allow_pickle=True)
             
