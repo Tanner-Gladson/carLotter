@@ -1,3 +1,5 @@
+## Tanner's first independent software project. Built from scratch and with many mistakes
+
 A software for allocating & managing reservations in a parking garage. Features include
   1) User account system
   2) Reservation creation, modification, and cancellation
@@ -7,7 +9,3 @@ A software for allocating & managing reservations in a parking garage. Features 
 The administrator UI can be initiated by running AdminUI.py.
 
 A descriptive Miro board used for planning: https://miro.com/app/board/uXjVOr3UdwI=/?share_link_id=857621473768
-
-
-
-- Tanner's first independent software project. Built from scratch and with many mistakes
